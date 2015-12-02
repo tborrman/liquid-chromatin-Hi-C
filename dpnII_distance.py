@@ -18,8 +18,9 @@ def main():
 		DPN = open('../dpnII/dpnII_sites_chr'+chrom+'.bed', 'r')
 		coords = []
 		for line in DPN:
+			# Change coordinates from BED file format
 			coord1 = int(line.split()[1]) + 1
-			coord2 = int(line.split()[2]) + 1
+			coord2 = int(line.split()[2])
 			coords.append(coord1)
 			coords.append(coord2)
 		dpnII_sites['chr'+chrom] = coords
@@ -37,6 +38,9 @@ def main():
 			print 'On read: '+ str(counter)
 		# Get chromosome
 		chrom = line.split()[2]
+		# Ignore mitochondrial DNA
+		if chrom == 'chrM':
+			continue
 		start = int(line.split()[3])
 		# Find closest dpnII site
 		closest = min(dpnII_sites[chrom], key=lambda x: abs(start-x))
