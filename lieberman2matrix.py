@@ -27,7 +27,7 @@ bin_ind = list(l_df.loc[l_df[0] == list(l_df[0])[0], 1])
 
 columns = []
 for bin in bin_ind:
-	colname = '|'.join([args.n, args.a, 'chr'+args.c+':'+str(bin + 1)+'-'+str(bin+args.b)])
+	colname = '|'.join([args.n, args.a, 'chr'+args.c+':'+str((bin + 1)*1000)+'-'+str((bin+args.b)*1000)])
 	columns.append(colname)
 
 my5c_df = pd.DataFrame(columns=columns, index=columns)
