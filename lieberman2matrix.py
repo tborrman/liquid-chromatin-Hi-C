@@ -19,27 +19,26 @@ args = parser.parse_args()
 l_df = pd.read_csv(args.l, sep='\t', header=None)
 l_df  = l_df.sort_values(by=[0,1])
 
-# Get all bin indices
-bin_ind = list(l_df.loc[l_df[0] == list(l_df[0])[0], 1])
-
-# Initialize my5C matrix
-# dim = str(len(bin_ind)) + 'x' + str(len(bin_ind))
+last_bin =  int(l_df.loc[len(l_df[0]) - 1,0])
+bins = range(0, last_bin + 1, args.b * 1000)
 
 columns = []
-for bin in bin_ind:
-	colname = '|'.join([args.n, args.a, 'chr'+args.c+':'+str((bin + 1)*1000)+'-'+str((bin+args.b)*1000)])
+for bin in bins:
+	colname = '|'.join([args.n, args.a, 'chr'+args.c+':'+str(bin + 1)+'-'+str(bin+(args.b * 1000))])
 	columns.append(colname)
 
 my5c_df = pd.DataFrame(columns=columns, index=columns)
 
 # Transform data
 for i, row in l_df.iterrows():
-	my5c_df.iloc[bin_ind.index(row[0]), bin_ind.index(row[1])] = row[2]
+	x = '|'.join([args.n, args.a, 'chr'+args.c+':'+str(int(row[0]) + 1)+'-'+str(int(row[0])+(args.b * 1000))])
+	y = '|'.join([args.n, args.a, 'chr'+args.c+':'+str(int(row[1]) + 1)+'-'+str(int(row[1])+(args.b * 1000))])
+	my5c_df.loc[x, y] = row[2]
 	# for symmetry
-	my5c_df.iloc[bin_ind.index(row[1]), bin_ind.index(row[0])] = row[2]
+	my5c_df.loc[y, x] = row[2]
 
 # Write to file
-	my5c_df.to_csv(args.o + '.matrix', sep='\t')
+my5c_df.to_csv(args.o + '.matrix', sep='\t', na_rep='nan')
 
 
 
