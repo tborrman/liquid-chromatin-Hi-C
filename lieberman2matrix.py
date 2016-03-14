@@ -27,7 +27,7 @@ for bin in bins:
 	colname = '|'.join([args.n, args.a, 'chr'+args.c+':'+str(bin + 1)+'-'+str(bin+(args.b * 1000))])
 	columns.append(colname)
 
-my5c_df = pd.DataFrame(columns=columns, index=columns)
+my5c_df = pd.DataFrame(0, columns=columns, index=columns)
 
 # Transform data
 for i, row in l_df.iterrows():
