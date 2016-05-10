@@ -10,8 +10,8 @@ args=parser.parse_args()
 IN = open(args.i, 'r')
 counter=0
 for line in IN:
-	if '#' in line:
-		counter += 1
+    if '#' in line:
+        counter += 1
 
 x=np.genfromtxt(args.i, comments='#', delimiter='\t', skip_header=counter + 1, missing_values='nan')
 y = np.nansum(x, axis=1)
