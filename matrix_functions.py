@@ -33,14 +33,16 @@ def remove_NA_zeros(X, xheader, yheader, percent):
 	Remove rows and columns with more than 'percent' NAs or zeros
 	'''
 	# Remove rows	
-	rows_to_keep = np.sum(np.logical_or(np.isnan(X), X==0), 1).astype(float)/len(X[0,:]) <= percent
+	#rows_to_keep = np.sum(np.logical_or(np.isnan(X), X==0), 1).astype(float)/len(X[0,:]) <= percent
+	rows_to_keep = np.sum(np.isnan(X), 1).astype(float)/len(X[0,:]) <= percent
 	X_removed_rows = X[rows_to_keep, :]
 	# Update yheader
 	yheader = np.array(yheader, dtype=str)
 	yheader_update = yheader[rows_to_keep]
 
 	# Remove columns
-	cols_to_keep = np.sum(np.logical_or(np.isnan(X), X==0), 0).astype(float)/len(X[:,0]) <= percent
+	#cols_to_keep = np.sum(np.logical_or(np.isnan(X), X==0), 0).astype(float)/len(X[:,0]) <= percent
+	cols_to_keep = np.sum(np.isnan(X), 0).astype(float)/len(X[:,0]) <= percent
 	X_removed_NA_zeros  =  X_removed_rows[:, cols_to_keep]
 	# Update xheader
 	xheader = np.array(xheader, dtype=str)
