@@ -20,7 +20,8 @@ l_df = pd.read_csv(args.l, sep='\t', header=None)
 l_df  = l_df.sort_values(by=[0,1])
 
 last_bin =  int(l_df.loc[len(l_df[0]) - 1,0])
-bins = range(0, last_bin + 1, args.b * 1000)
+first_bin = int(l_df.loc[0,0])
+bins = range(first_bin, last_bin + 1, args.b * 1000)
 
 columns = []
 for bin in bins:
@@ -30,12 +31,16 @@ for bin in bins:
 my5c_df = pd.DataFrame(0, columns=columns, index=columns)
 
 # Transform data
+counter = 0
 for i, row in l_df.iterrows():
+	if counter % 10 == 0:
+		print 'On row: ' + str(counter)
 	x = '|'.join([args.n, args.a, 'chr'+args.c+':'+str(int(row[0]) + 1)+'-'+str(int(row[0])+(args.b * 1000))])
 	y = '|'.join([args.n, args.a, 'chr'+args.c+':'+str(int(row[1]) + 1)+'-'+str(int(row[1])+(args.b * 1000))])
-	my5c_df.loc[x, y] = row[2]
+	my5c_df.ix[x, y] = row[2]
 	# for symmetry
-	my5c_df.loc[y, x] = row[2]
+	my5c_df.ix[y, x] = row[2]
+	counter += 1
 
 # Write to file
 my5c_df.to_csv(args.o + '.matrix', sep='\t', na_rep='nan')

@@ -7,7 +7,7 @@ from hmmlearn import hmm
 
 parser = argparse.ArgumentParser(description='Perform Rao et al. (2014) HMM subcompartment analysis')
 parser.add_argument('-i', help='input interaction matrix file', type=str, required=True)
-parser.add_argument('-r', help='run HMM on rows/even chromosomes)', type=bool, default=False)
+parser.add_argument('-c', help='run HMM on columns/even chromosomes)', type=bool, default=False)
 
 args = parser.parse_args()
 
@@ -26,7 +26,7 @@ def main():
 
 	# Step 2
 	# Determine whether to transpose matrix
-	if args.r:
+	if args.c:
 		# Transpose matrix
 		print 'Transposing matrix...'
 		X_step2 = np.transpose(X_step1)
@@ -35,9 +35,9 @@ def main():
 
 
 	# Step 3
-	# Transform matrix to zscores by column
-	print 'Transforming columns to zscores...'
-	X_step3 = stats.zscore(X_step2, axis = 0)
+	# Transform matrix to zscores by row
+	print 'Transforming rows to zscores...'
+	X_step3 = stats.zscore(X_step2, axis = 1)
 	
 
 	# Step 4
@@ -47,19 +47,19 @@ def main():
 	model.fit(X_step3)
 	print 'HMM output'
 	classes= model.predict(X_step3)
-	if args.r:
-		print '# of rows: ' + str(len(yheader))
-		print '# of class entries: ' + str(len(classes))
-		OUT = open('even_compartments.tab', 'w')
-		for i in range(len(yheader)):
-			OUT.write(yheader[i] + '\t' + str(classes[i]) + '\n')
-		OUT.close()
-	else:
+	if args.c:
 		print '# of columns: ' + str(len(xheader))
 		print '# of class entries: ' + str(len(classes))
-		OUT = open('odd_compartments.tab', 'w')
+		OUT = open('even_compartments.tab', 'w')
 		for i in range(len(xheader)):
 			OUT.write(xheader[i] + '\t' + str(classes[i]) + '\n')
+		OUT.close()
+	else:
+		print '# of rows: ' + str(len(yheader))
+		print '# of class entries: ' + str(len(classes))
+		OUT = open('odd_compartments.tab', 'w')
+		for i in range(len(yheader)):
+			OUT.write(yheader[i] + '\t' + str(classes[i]) + '\n')
 		OUT.close()
 
 if __name__ == '__main__':

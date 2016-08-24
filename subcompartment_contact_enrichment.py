@@ -1,11 +1,14 @@
 #!/usr/bin/env python
 import argparse
+import matrix_functions as mf
+import numpy as np
 
 
 parser = argparse.ArgumentParser(description='Calculate contact enrichment to merge odd/even subcompartment calls')
 parser.add_argument('-i', help='input interaction matrix file', type=str, required=True)
 parser.add_argument('-o', help='odd chrom subcompartment calls (ex. odd_compartments.tab)', type=str, required=True)
 parser.add_argument('-e', help='even chrom subcompartment calls (ex. even_compartments.tab)', type=str, required=True)
+args = parser.parse_args()
 
 def main():
 
@@ -25,10 +28,11 @@ def main():
 	contact_enrich = np.zeros((5,5), dtype=object)
 	for i in range(len(contact_enrich)):
 		for j in range(len(contact_enrich[i])):
-			x[i,j] = []
+			contact_enrich[i,j] = []
 	ODD_FH = open(args.o, 'r')
 	EVEN_FH = open(args.e, 'r')
 	odd = []
+	even = []
 	for line in ODD_FH:
 		odd.append(int(line.split()[1]))
 	ODD_FH.close()
@@ -36,14 +40,16 @@ def main():
 		even.append(int(line.split()[1]))
 	EVEN_FH.close()
 	# Size check
-	if len(odd) != len(X_step1[0,:]) or len(even) != len(X_step1):
+	if len(odd) != len(X_step1) or len(even) != len(X_step1[0,:]):
 		print 'ERROR: size mismatches exist'
 		quit()
  
 	for i in range(len(X_step1)):
+		if i % 1000 == 0:
+			print 'On row: ' + str(i)
 		for j in range(len(X_step1[0,:])):
-			even_class = even[i]
-			odd_class = odd[j] 
+			odd_class = odd[i]
+			even_class = even[j] 
 			contact_enrich[odd_class, even_class].append(X_step1[i,j])
 
 	for i in range(len(contact_enrich)):
