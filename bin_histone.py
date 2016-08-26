@@ -20,7 +20,7 @@ def main():
 		for line in ChIP:
 			splitline = line.split()
 			if (splitline[0] == chrom) and (int(splitline[1]) >= start) and (int(splitline[1]) < end):
-				bin_signals.append(int(splitline[3]))
+				bin_signals.append(float(splitline[3]))
 		ChIP.close()
 		signal_sum = sum(bin_signals)
 		print '\t'.join([chrom, str(start), str(end), str(signal_sum)])
