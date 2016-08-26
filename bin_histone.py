@@ -16,6 +16,7 @@ def main():
 		end = int(gen_line.split()[2])
 		bin_signals = []
 		ChIP = open(args.i, 'r')
+		ChIP.readline()
 		for line in ChIP:
 			splitline = line.split()
 			if (splitline[0] == chrom) and (int(splitline[1]) >= start) and (int(splitline[1]) < end):
