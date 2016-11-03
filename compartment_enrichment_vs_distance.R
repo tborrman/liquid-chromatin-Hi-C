@@ -54,8 +54,8 @@ DN_AB_mean <- compartment_mean(DN_AB, distances)
 
 options(scipen = 1000)
 png("compartment_means_vs_distance.png", width=2500, height=2500, res=300)
-plot(distances/1000, MN_AA_mean, type='l', col="red", lwd=2, xlab= "Distance (kb)", ylab="Mean interaction Frequency")
-lines(distances/1000, MN_AB_mean, type='l', col="mediumorchid4", lwd=2, xlab= "distance (kb)", ylab="Mean Interaction Frequency")
+plot(distances/1000, MN_AA_mean, type='l', col="red", lwd=2, xlab= "Distance (kb)", ylab="Mean Interaction Frequency")
+lines(distances/1000, MN_AB_mean, type='l', col="mediumorchid4", lwd=2)
 legend("topright", c("Non-fragmented A-A", "Non-fragmented A-B"), lty=c(1,1), lwd=c(2,2), col=c("red", "mediumorchid4"))
 dev.off()
 
@@ -86,7 +86,15 @@ DN_AA_enrich <- compartment_enrichment(DN_AA, DN_AB, distances)
 DN_BB_enrich <- compartment_enrichment(DN_BB, DN_AB, distances)
 
 
+png("compartment_enrich_vs_distance.png", width=3000, height=2500, res=300)
+plot(distances/1000, MN_AA_enrich, type='l', lty=1, col="red", lwd=2, xlab= "Distance (kb)", ylab="Ratio of enrichment over AB interactions")
+lines(distances/1000, MN_BB_enrich, type='l',lty=1, col="blue", lwd=2)
+lines(distances/1000, DN_AA_enrich, type='l', lty=3, col="red", lwd=2 )
+lines(distances/1000, DN_BB_enrich, type='l', lty=3, col="blue", lwd=2)
 
+legend("topleft", c("Non-fragmented A-A", "Non-fragmented B-B", "Fragmented A-A", "Fragmented B-B"), lty=c(1,1,3,3), lwd=c(2,2,2,2),
+       col=c("red", "blue", "red", "blue"))
+dev.off()
 
 
 
