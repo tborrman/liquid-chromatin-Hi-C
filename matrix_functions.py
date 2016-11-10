@@ -48,3 +48,21 @@ def remove_NA_zeros(X, xheader, yheader, percent):
 	xheader = np.array(xheader, dtype=str)
 	xheader_update = xheader[cols_to_keep]
 	return(X_removed_NA_zeros, xheader_update, yheader_update)
+
+def numpy_matrix_2_dekker(X, colnames, rownames, filename):
+	''' 
+	Write numpy matrix into dekker format interaction matrix txt file
+	'''
+	shape = 'x'.join(map(str,X.shape))
+	OUT = gzip.open(filename, 'wb')
+	colnames.insert(0,shape)
+	OUT.write('\t'.join(colnames) + '\n')
+	for row_idx in range(len(X)):
+		line = X[row_idx,:]
+		fmt_line = ['{:.8f}'.format(x) for x in line]
+		fmt_line.insert(0, rownames[row_idx])
+		OUT.write('\t'.join(fmt_line) + '\n')
+	OUT.close()
+
+	
+
