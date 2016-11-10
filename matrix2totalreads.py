@@ -3,7 +3,7 @@ import argparse
 import numpy as np
 import gzip
 
-parser=argparse.ArgumentParser(description='Input a matrix and output count of total interactions in upper triangle exluding diagonal')
+parser=argparse.ArgumentParser(description='Input a matrix and output count of total interactions in upper triangle including diagonal')
 parser.add_argument('-i', help='Input matrix', type=str, dest='i', required=True)
 args=parser.parse_args()
 
@@ -18,7 +18,7 @@ for line in IN:
         counter += 1
 
 x=np.genfromtxt(args.i, comments='#', delimiter='\t', skip_header=counter + 1, missing_values='nan')
-up_tri = np.triu(x,1)
+up_tri = np.triu(x)
 y = np.nansum(up_tri, axis=1)
 print 'Total reads: ' + str(np.nansum(y))
 
