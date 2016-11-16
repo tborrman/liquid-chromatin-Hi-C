@@ -17,7 +17,7 @@ for line in IN:
     if '#' in line:
         counter += 1
 
-x=np.genfromtxt(args.i, comments='#', delimiter='\t', skip_header=counter + 1, missing_values='nan')
+x=np.genfromtxt(args.i, comments='#', delimiter='\t', skip_header=counter + 1, missing_values='nan,NA')
 up_tri = np.triu(x)
 y = np.nansum(up_tri, axis=1)
 print 'Total reads: ' + str(np.nansum(y))
