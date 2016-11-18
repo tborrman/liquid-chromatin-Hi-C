@@ -7,6 +7,6 @@ parser.add_argument('-f', help='file prefix (ex. HBCRACKHiC-K562-DN__hg19__genom
 args = parser.parse_args()
 
 for chrom in map(str,range(1, 23)) + ['X']:
-	subprocess.call("bsub -q short -W 1:00 -R 'rusage[mem=5000]' perl /home/tb37w/project/Research/ENCODE/cworld-dekker/scripts/perl/matrix2compartment.pl " +
+	subprocess.call("bsub -q short -W 4:00 -R 'rusage[mem=10000]' perl /home/tb37w/project/Research/ENCODE/cworld-dekker/scripts/perl/matrix2compartment.pl " +
 		"-i " + "./" + args.f + chrom + ".matrix.gz", 
 		shell=True)
