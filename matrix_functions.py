@@ -64,5 +64,12 @@ def numpy_matrix_2_dekker(X, colnames, rownames, filename):
 		OUT.write('\t'.join(fmt_line) + '\n')
 	OUT.close()
 
-	
+def total_reads(X):
+	'''
+	Input numpy matrix and output count of total interactions 
+	in upper triangle including diagonal
+	'''
+	up_tri = np.triu(X)
+	y = np.nansum(up_tri, axis=1)
+	return np.nansum(y)
 
