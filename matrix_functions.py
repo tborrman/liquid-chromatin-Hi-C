@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import numpy as np
 import gzip
+import h5py
 
 def dekker_2_numpy_matrix(filename):
 	''' 
@@ -72,4 +73,13 @@ def total_reads(X):
 	up_tri = np.triu(X)
 	y = np.nansum(up_tri, axis=1)
 	return np.nansum(y)
+
+def hdf5_2_numpy_matrix(filename):
+	'''
+	Load hdf5 format interaction matrix into numpy matrix
+	'''
+	f = h5py.File(filename, 'r')
+	x = f['interactions'][:]
+	return x
+
 
