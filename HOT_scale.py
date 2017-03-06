@@ -4,7 +4,6 @@ import sys
 import os
 import subprocess
 import shutil
-import re
 import h5py
 import matrix_functions as mf
 
@@ -34,13 +33,15 @@ def scaleMatrixbyFactor(file, factor):
 	# HDF5 format
 	if file[-5:] == '.hdf5':
 		filename_prefix = file[:-5]
-		shutil.copy('raw/' + file, filename_prefix + '_scaleBy_' + str(round(factor,2)) + '.hdf5')
-		f = h5py.File(filename_prefix + '_scaleBy_' + str(round(factor,2)) + '.hdf5', 'r+')
+		scaled_file = filename_prefix + '_scaleBy_' + str(round(factor,2)) + '.hdf5'
+		shutil.copy(file, scaled_file)
+		f = h5py.File(scaled_file, 'r+')
 		scaled_interactions = f['interactions'][:] * factor
 		blocksize = f['interactions'].chunks
 		del f['interactions']
 		f.create_dataset("interactions",  data=scaled_interactions, dtype='float64', compression='gzip', chunks=blocksize)
 		f.close()
+		return scaled_file
 		
 	else:
 		print 'ERROR: wrong file extension'
@@ -48,28 +49,31 @@ def scaleMatrixbyFactor(file, factor):
 
 def main():
 
-	if not os.path.exists('hot'):
-		os.makedirs('hot')
-	###########################################################
-	# Step 1. Scale 
-
 	# Get total reads of allxall matrix
 	total_reads = all_x_all_total_reads(args.i)
 	scale_factor = 1000000000.0 / total_reads
 
 	# Scale file
-	scaleMatrixbyFactor(args.i, scale_factor)
-	scaled_file = args.i[:-5] + '_scaleBy_' + str(round(scale_factor, 2)) + '.hdf5'
+	scaled_file = scaleMatrixbyFactor(args.i, scale_factor)
+	print 'scaling...'
 
 	# Ice file
-	p = subprocess.Popen(['balance.py', '-i', scaled_file, '-v'])
+	p = subprocess.Popen(['balance.py', '-i', scaled_file])
 	p.wait()
 	iced_file = scaled_file[:-5] + '.balanced.hdf5'
+	print 'icing...'
 
 	# Rescale iced matrix
 	total_reads = all_x_all_total_reads(iced_file)
 	scale_factor = 1000000000.0 / total_reads
-	scaleMatrixbyFactor(iced_file, scale_factor)
+	hot_file = scaleMatrixbyFactor(iced_file, scale_factor)
+	print 'rescaling...'
+	
+	# Cleanup
+	os.remove(scaled_file)
+	os.remove(scaled_file[:-5] + '.factors')
+	os.remove(iced_file)
+	
 
 
 if __name__ == '__main__':
