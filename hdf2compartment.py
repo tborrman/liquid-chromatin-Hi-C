@@ -5,6 +5,7 @@ import os
 import sys
 import subprocess
 import re
+import glob
 
 
 parser = argparse.ArgumentParser(description='Extract all cis maps from hdf5 and '+
@@ -54,8 +55,8 @@ def extract_cis_matrices(hdf, hpath):
 	if not os.path.exists('matrices'):
 		os.makedirs('matrices')
 
-	p=subprocess.Popen('bsub -K -q short -W 4:00 -R "rusage[mem=10000]" -o hdf2tab.out '+
-		'-e hdf2tab.err python ' + hpath + '/scripts/hdf2tab.py -i ' + hdf + ' -v -wm cis '+
+	p=subprocess.Popen('bsub -K -q short -W 4:00 -R "rusage[mem=10000]" '+
+		'python ' + hpath + '/scripts/hdf2tab.py -i ' + hdf + ' -v -wm cis '+
 		'-o matrices/' + hdf[:-5], shell=True, stdout=subprocess.PIPE)
 	p.wait()
 
@@ -65,10 +66,27 @@ def extract_cis_matrices(hdf, hpath):
 	else:
 		print 'ERROR in extracting matrices'
 
+def run_matrix2compartment(cpath):
+	'''
+	Run matrix2compartment.pl on all matrix files in matrices/
+	'''
+	print 'Running matrix2compartment.pl ....'
+	if not os.path.exists('compartments'):
+		os.makedirs('compartments')
+	os.chdir('compartments')
+	matrices = glob.glob('../matrices/*.matrix*')
+	for matrix in matrices:
+		p = subprocess.Popen('bsub -q short -W 4:00 -R "rusage[mem=10000]" '+
+			'perl ' + cpath + '/scripts/perl/matrix2compartment.pl -i ' + matrix,
+			shell = True, stdout=subprocess.PIPE)
+	
 
 def main():
 	# Extract cis matrices from hdf5
 	extract_cis_matrices(args.i, args.hp)
+	# Run matrix2compmartment
+	run_matrix2compartment(args.cp)
+
 
 
 
