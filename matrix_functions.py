@@ -82,4 +82,22 @@ def hdf5_2_numpy_matrix(filename):
 	x = f['interactions'][:]
 	return x
 
+def get_cis_matrix(f, chrom):
+	'''
+	Get cis interaction matrix
+	
+	Args:
+		f: h5py Hi-C file object
+	Returns:
+		c: numpy cis interaciton matrix for 
+			chrom
+	'''
+	chr_idx, = np.where(f['chrs'][:] == chrom)
+	chr_idx = chr_idx[0]
+	bins = f['chr_bin_range'][chr_idx]
+	c = f['interactions'][bins[0]:bins[1] + 1, bins[0]: bins[1] + 1]
+	return c
+	
+
+
 
