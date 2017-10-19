@@ -60,6 +60,48 @@ def scatter_plot(i, t, xp, p, out):
 	plt.close()
 	return
 
+def scatter_plot_slope(i, t, xp, p, s, ts, out):
+	'''
+	Plot a scatter_plot of interactions vs time
+
+	Args:
+		i: interactions from timecourse
+		t: time in minutes
+		xp: range of x
+		p: numpy poly1d object 
+		s: slope
+		ts: timepoint for slope
+	'''
+	fig, ax = plt.subplots(figsize=(8,4))
+	# ax.spines['right'].set_visible(False)
+	# ax.spines['top'].set_visible(False)
+	# ax.spines['left'].set_linewidth(2)
+	# ax.spines['bottom'].set_linewidth(2)
+	# ax.yaxis.set_ticks_position('left')
+	# ax.xaxis.set_ticks_position('bottom')
+	# ax.xaxis.set_tick_params(width=2)
+	# ax.yaxis.set_tick_params(width=2)
+	ax.set_xlabel(r'Minutes', fontsize=10)
+	ax.set_ylabel(r'Interactions', fontsize=10)
+	ax.set_xlim([-10,1200])
+	ax.set_ylim([-10,6500])
+	ax.scatter(t, i)
+
+	ax.plot(xp, p(xp))
+	#ax.vlines(hl, 0, 6000, colors='r')
+	#ax.hlines(pm, 0, 500, colors='r')
+
+	# Calculate y-intercept
+	# b = y-mx
+	b = p(ts) - (s*ts)	
+	tang_line = s*xp + b
+	plt.scatter(ts, p(ts), c='r')
+	plt.plot(xp, tang_line, c='r')
+	ax.text(800, 4000, 'slope = ' + str(round(s, 2)))
+	plt.savefig(out, dpi=300)
+	plt.close()
+	return
+
 def get_half_life(i, t):
 	'''
 	Get half life of interactions for 2D position in
@@ -93,15 +135,30 @@ def get_half_life(i, t):
 		return hl, predict_mid
 	
 
+def get_slope(i, t, ts):
+	'''
+	Get slope of polynomial fit for 2D position in
+	Hi-C matrix
+
+	Args: 
+		i: interactions from timecourse
+		t: time in minutes
+		ts: timepoint for slope
+	Returns:
+		s: slope 
+	'''
+	z = np.polyfit(t, i, 2)
+	poly = np.poly1d(z)
+	d = poly.deriv()
+	s = d(ts)
+	return s
 	
-
-
 def main():
 
 	# Create copy of mock and use that to write over
 	# with half life data
-	shutil.copy(args.i[0], 'half_life_chr14.hdf5')
-	f = h5py.File('half_life_chr14.hdf5', 'r+')
+	shutil.copy(args.i[0], 'slope_chr14.hdf5')
+	f = h5py.File('slope_chr14.hdf5', 'r+')
 
 	# List of timecourse file objects in order
 	f_obj_list = []
@@ -125,12 +182,11 @@ def main():
 	
 
 	# polyfit
+	s = get_slope(interactions, time, 150)
 	z = np.polyfit(time, interactions, 2)
 	p = np.poly1d(z)
-	print z
 	xp = np.linspace(-10, 1000, 100)
-	print xp
-	scatter_plot(interactions, time, xp, p, 'test_10.png')
+	scatter_plot_slope(interactions, time, xp, p, s, 150,'test_10_slope.png')
 
 
 	interactions = []
@@ -138,10 +194,11 @@ def main():
 		interactions.append(h[80,180])
 
 	# polyfit
+	s = get_slope(interactions, time, 150)
 	z = np.polyfit(time, interactions, 2)
 	p = np.poly1d(z)
 	xp = np.linspace(-10, 1000, 100)
-	scatter_plot(interactions, time, xp, p, 'test_100.png')
+	scatter_plot_slope(interactions, time, xp, p, s, 150, 'test_100_slope.png')
 	print interactions
 
 	interactions = []
@@ -149,10 +206,11 @@ def main():
 		interactions.append(h[80,85])
 
 	# polyfit
+	s = get_slope(interactions, time, 150)
 	z = np.polyfit(time, interactions, 2)
 	p = np.poly1d(z)
 	xp = np.linspace(-10, 1000, 100)
-	scatter_plot(interactions, time, xp, p, 'test_5.png')
+	scatter_plot_slope(interactions, time, xp, p, s, 150, 'test_5_slope.png')
 	print interactions
 
 	interactions = []
@@ -160,17 +218,13 @@ def main():
 		interactions.append(h[80,120])
 
 	# polyfit
+	s = get_slope(interactions, time, 150)
 	z = np.polyfit(time, interactions, 2)
 	p = np.poly1d(z)
 	xp = np.linspace(-10, 1000, 100)
-	scatter_plot(interactions, time, xp, p, 'test_40.png')
+	scatter_plot_slope(interactions, time, xp, p, s, 150, 'test_40_slope.png')
 
-	hl, pred_mid = get_half_life(interactions, time)
-	print '*****hl*****'
-	print hl
-	print '************'	
 
-	#scatter_plot(interactions, time, xp, p, 'test_10_lines.png', hl, pred_mid)
 	chrom = 'chr14'
 	chr_idx, = np.where(f['chrs'][:] == chrom)
 	chr_idx = chr_idx[0]
@@ -185,8 +239,8 @@ def main():
 			interactions = []
 			for h in chr14_list:
 				interactions.append(h[i, j])
-			hl, pred_mid = get_half_life(interactions, time)
-			f['interactions'][bins[0] + i, bins[0] + j] = hl
+			s = get_slope(interactions, time, 150)
+			f['interactions'][bins[0] + i, bins[0] + j] = s
 	print f['interactions'][:]
 	print f['interactions'][bins[0] + 80, bins[0] + 90]
 
