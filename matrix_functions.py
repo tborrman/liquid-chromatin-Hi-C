@@ -2,6 +2,7 @@
 import numpy as np
 import gzip
 import h5py
+import sys
 
 def dekker_2_numpy_matrix(filename):
 	''' 
@@ -97,7 +98,43 @@ def get_cis_matrix(f, chrom):
 	bins = f['chr_bin_range'][chr_idx]
 	c = f['interactions'][bins[0]:bins[1] + 1, bins[0]: bins[1] + 1]
 	return c
+
+def get_all_trans(f):
+	'''
+	Get all trans interacitions from hdf5
+
+	Args:
+		f: h5py Hi-C file object
+	Returns:
+		trans : numpy array of all trans interactions
+	'''
+
+	# Test example
+	# bins = np.array([[0,0],[1,2],[3,3],[4,5]])
+	# x = np.array([[1,2,3,4,5,6],[5,6,7,8,9,1],[9,1,2,3,4,5],[4,5,6,7,8,9],[5,1,-2,-5,-1,-9], [-1,-3,4,-7,8,-9]])
+
+	bins = f['chr_bin_range'][:]
+	# Remove Y chrom since K562 and also mitochondrial chrom
+	bins = bins[:-2,:]
+	x = f['interactions'][:]
 	
+
+	trans = np.array([])
+	row_length = bins[-1,:][1] + 1
+
+	for chrom_bin in bins:
+		chrom_length = chrom_bin[1] - chrom_bin[0] + 1
+		trans_length = row_length - chrom_length
+		rows = []
+		cols = []
+		for i in range(chrom_bin[0], chrom_bin[1] + 1):
+			rows.append([i]*trans_length)
+			cols.append(range(0,chrom_bin[0]) + range(chrom_bin[1] + 1, row_length))
+		trans = np.append(trans, x[rows, cols])
+	return trans
+
+
+		
 
 
 
