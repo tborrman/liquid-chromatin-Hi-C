@@ -14,7 +14,7 @@ def main():
 	h = h5py.File(args.i, 'r')
 	t = mf.get_all_trans(h)
 	mt = np.median(t)
-	print 'Median trans interactions for ' + str(args.i) + ': ' + str(round(mt, 4))
+	print str(args.i) + '\t' + str(round(mt, 4))
 
 
 if __name__ == '__main__':
