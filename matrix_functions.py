@@ -101,7 +101,9 @@ def get_cis_matrix(f, chrom):
 
 def get_all_trans(f):
 	'''
-	Get all trans interacitions from hdf5
+	Get all trans interactions from hdf5
+
+	NOTE: this is grabbing all trans from full matrix so double counting
 
 	Args:
 		f: h5py Hi-C file object
