@@ -29,6 +29,57 @@ def check_shape(x):
 			flag = False 
 	return flag
 
+def my_boxplot(d):
+	'''
+	Boxplots for timecourse interactions
+
+	Args:
+		d: list of numpy interaction arrays for
+			timecourse timepoints
+	'''
+	# Full boxplot
+	fig, ax = plt.subplots(figsize=(5,8))
+	ax.spines['right'].set_visible(False)
+	ax.spines['top'].set_visible(False)
+	ax.yaxis.set_ticks_position('left')
+	ax.xaxis.set_ticks_position('bottom')
+	flierpointprops = dict(marker='o', markeredgecolor='black',
+		markerfacecolor='white')
+	timelabels = ['MN', '5m', '1h', '2h', '3h', '4h', 'OVN']
+	bplot = ax.boxplot(d, showmeans=True, flierprops=flierpointprops,
+		meanline=True, labels=timelabels, patch_artist=True)
+	plt.tick_params(axis= 'x',labelsize=15)
+	ax.set_ylabel('Interactions', fontsize=15)
+	plt.setp(bplot['whiskers'], color='k')
+	plt.setp(bplot['medians'], color='k')
+	plt.setp(bplot['means'], color = 'r')
+	plt.setp(bplot['boxes'], facecolor='0.75')
+	fig.tight_layout()
+	plt.savefig('chr14_interactions_boxplot_timecourse.png', dpi=300)
+	plt.close()
+	
+	# Zoom boxplot
+	fig, ax = plt.subplots(figsize=(5,8))
+	ax.spines['right'].set_visible(False)
+	ax.spines['top'].set_visible(False)
+	ax.yaxis.set_ticks_position('left')
+	ax.xaxis.set_ticks_position('bottom')
+	bplot = ax.boxplot(d, showmeans=True, flierprops=flierpointprops,
+		meanline=True, labels=timelabels, patch_artist=True)
+	plt.tick_params(axis= 'x',labelsize=15)
+	ax.set_ylabel('Interactions', fontsize=15)
+	ax.set_ylim(-10,1000)
+	# for box in bplot['boxes']:
+	# 	box.set_facecolor('0.75')
+	plt.setp(bplot['whiskers'], color='k')
+	plt.setp(bplot['medians'], color='k')
+	plt.setp(bplot['means'], color = 'r')
+	plt.setp(bplot['boxes'], facecolor='0.75')
+	fig.tight_layout()
+	plt.savefig('chr14_interactions_boxplot_timecourse_zoom.png', dpi=300)
+	plt.close()
+
+
 
 def main():
 
@@ -50,13 +101,8 @@ def main():
 	data = []
 	for c in chr14_list:
 		iu1 = np.triu_indices(c.shape[0])
-		print sum(c[iu1])
 		data.append(c[iu1])
-	plt.figure()
-	plt.boxplot(data, showmeans=True)
-	plt.ylim(-10, 5000)
-	plt.savefig('testboxplot.png', dpi=300)
-	plt.close()
+	my_boxplot(data)
 	
 
 
