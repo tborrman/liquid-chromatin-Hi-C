@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import argparse
@@ -79,7 +80,83 @@ def my_boxplot(d):
 	plt.savefig('chr14_interactions_boxplot_timecourse_zoom.png', dpi=300)
 	plt.close()
 
+def my_norm(x, xmin, xmax):
+    return (x - xmin) / float(xmax - xmin)
 
+
+def plot_mean_interaction_distance(l):
+	'''
+	Plot mean interactions vs timepoints across different 
+	distances
+	
+	Args: 
+		c: list of numpy matrices for each timepoint
+	'''
+	x = [1,2,3,4,5,6,7]
+	timelabels = ['MN', '5m', '1h', '2h', '3h', '4h', 'OVN']
+	ncol = l[0].shape[0]
+	binsizeMb = .5
+	distances = np.arange(ncol) * binsizeMb
+	# For drawing colorbar
+	# https://stackoverflow.com/questions/26545897/drawing-a-colorbar-aside-a-line-plot-using-matplotlib
+	# this is identical to my_norm() function above
+	norm = matplotlib.colors.Normalize(vmin=np.min(distances), vmax=np.max(distances))
+
+	# choose a colormap
+	c_m = plt.cm.cool
+
+	# create a ScalarMappable and initialize a data structure
+	s_m = plt.cm.ScalarMappable(cmap=c_m, norm=norm)
+	s_m.set_array([])
+
+	# Set figure parmaters 
+	fig, ax = plt.subplots(figsize=(8,6))
+	ax.spines['right'].set_visible(False)
+	ax.spines['top'].set_visible(False)	
+	ax.yaxis.set_ticks_position('left')
+	ax.xaxis.set_ticks_position('bottom')
+	ax.set_ylabel('Mean Interactions', fontsize=12)
+
+	# Get mean interactions at distances
+	for i, d in enumerate(distances):
+		interaction_means = []
+		for c in l:
+			interaction_means.append(np.mean(np.diag(c, k= i)))
+		# Plot lines
+		ax.plot(x, interaction_means, color=s_m.to_rgba(d))
+	ax.set_xticklabels(timelabels)
+	cbar = fig.colorbar(s_m)
+	cbar.set_label('Distance (Mb)')
+	fig.tight_layout()
+	plt.savefig('chr14_mean_interactions_distance_timecourse.png', dpi=300)
+	plt.close()
+
+	# Zoom figure 
+	fig, ax = plt.subplots(figsize=(8,6))
+	ax.spines['right'].set_visible(False)
+	ax.spines['top'].set_visible(False)	
+	ax.yaxis.set_ticks_position('left')
+	ax.xaxis.set_ticks_position('bottom')
+	ax.set_ylabel('Mean Interactions', fontsize=12)
+
+	# Get mean interactions at distances
+	for i, d in enumerate(distances):
+		interaction_means = []
+		for c in l:
+			interaction_means.append(np.mean(np.diag(c, k= i)))
+		# Plot lines
+		# if i == 19:
+		# 	ax.plot(x, interaction_means, color='k')
+		# else:
+		# 	ax.plot(x, interaction_means, color=s_m.to_rgba(d))
+		ax.plot(x, interaction_means, color=s_m.to_rgba(d))
+	ax.set_xticklabels(timelabels)
+	cbar = fig.colorbar(s_m)
+	cbar.set_label('Distance (Mb)')
+	ax.set_ylim(0,2500)
+	fig.tight_layout()
+	plt.savefig('chr14_mean_interactions_distance_timecourse_zoom.png', dpi=300)
+	plt.close()
 
 def main():
 
@@ -97,12 +174,15 @@ def main():
 		print 'ERROR unequal dimensions for cis matrices'
 		sys.exit()
 
-
+	# Boxplots for all interactions
 	data = []
 	for c in chr14_list:
 		iu1 = np.triu_indices(c.shape[0])
 		data.append(c[iu1])
 	my_boxplot(data)
+
+	# Mean interaction plots by distance
+	plot_mean_interaction_distance(chr14_list)
 	
 
 
