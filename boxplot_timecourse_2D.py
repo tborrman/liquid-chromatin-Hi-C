@@ -174,6 +174,16 @@ def main():
 		print 'ERROR unequal dimensions for cis matrices'
 		sys.exit()
 
+	# Max
+	z = chr14_list[2]
+	max_idx = np.unravel_index(np.argmax(z), z.shape)
+	print max_idx
+	print z[max_idx]
+	quit()
+
+
+
+
 	# Boxplots for all interactions
 	data = []
 	for c in chr14_list:
