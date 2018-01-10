@@ -135,6 +135,66 @@ def get_all_trans(f):
 		trans = np.append(trans, x[rows, cols])
 	return trans
 
+def kth_diag_indices(a, k):
+    rows, cols = np.diag_indices_from(a)
+    if k < 0:
+        return rows[-k:], cols[:k]
+    elif k > 0:
+        return rows[:-k], cols[k:]
+    else:
+        return rows, cols
+
+
+def expected(m):
+	'''
+	Return expected matrix of input matrix
+	element i,j replaced by mean of elements with genomic distance
+	equal to dist(i,j)
+	
+	Args:
+		m: numpy matrix
+	Returns:
+		e: numpy expected matrix
+	'''
+	e = m.astype(float)
+	numrows = m.shape[0]
+	for k in range(-numrows + 1, numrows):
+		d_indices = kth_diag_indices(e, k)
+		mu = np.mean(e[d_indices])
+		e[d_indices] = mu
+	return e
+
+def z_score(m):
+	'''
+	Return z_score matrix of input matrix
+	element i,j replaced by z-score derived from mean and std 
+	of elements with genomic distace equal to dist(i,j)
+
+	Args:
+		m: numpy matrix
+	Returns:
+		z: numpy z-score matrix
+	'''
+
+	z  = m.astype(float)
+	numrows = m.shape[0]
+	for k in range(-numrows + 1, numrows):
+		d_indices = kth_diag_indices(z, k)
+		obs = z[d_indices]
+		mu = np.mean(z[d_indices])
+		sigma = np.std(z[d_indices])
+		if sigma != 0:
+			zscore = (obs - mu) / sigma
+		else:
+			zscore = [np.nan]*len(obs)
+		z[d_indices] = zscore
+	return z
+
+
+
+
+
+
 
 		
 

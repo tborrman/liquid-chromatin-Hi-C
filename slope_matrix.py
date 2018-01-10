@@ -156,9 +156,9 @@ def get_slope(i, t, ts):
 def main():
 
 	# Create copy of mock and use that to write over
-	# with half life data
-	shutil.copy(args.i[0], 'slope_chr14.hdf5')
-	f = h5py.File('slope_chr14.hdf5', 'r+')
+	# with slope data
+	shutil.copy(args.i[0], 'slope_chr14_zscore.hdf5')
+	f = h5py.File('slope_chr14_zscore.hdf5', 'r+')
 
 	# List of timecourse file objects in order
 	f_obj_list = []
@@ -174,55 +174,90 @@ def main():
 	if not check_shape(chr14_list):
 		print 'ERROR unequal dimensions for cis matrices'
 		sys.exit()
-
-	interactions = []
-	time = np.array([0, 5, 60, 120, 180, 240, 960])
-	for h in chr14_list:
-		interactions.append(h[80, 90])
+	# Get expected matrices
+	chr14_expected = []
+	for c in chr14_list:
+		chr14_expected.append(mf.expected(c))
+	# Write expected matrices to file
+	for i, c in enumerate(chr14_expected):
+		colnames = map(str,range(c.shape[0]))
+		colnames = ['x'+ x for x in colnames]
+		rownames = list(colnames)
+		mf.numpy_matrix_2_dekker(c, colnames, rownames, 
+			'expected/' + args.i[i][:-5] + '_expected.matrix.gz')
+	# Get observed-expected matrices
+	chr14_obs_exp = []
+	for i, c in enumerate(chr14_list):
+		oe = c - chr14_expected[i]
+		chr14_obs_exp.append(oe)
+	# Write observed - expected matrices to file
+	for i, c in enumerate(chr14_obs_exp):
+		colnames = map(str,range(c.shape[0]))
+		colnames = ['x'+ x for x in colnames]
+		rownames = list(colnames)
+		mf.numpy_matrix_2_dekker(c, colnames, rownames,
+			'obs-exp/' + args.i[i][:-5] + '_obs-exp.matrix.gz')
+	# Get z-score matrices 
+	chr14_zscore = []
+	for c in chr14_list:
+		chr14_zscore.append(mf.z_score(c))
+	# Write z-score matrices to file
+	for i, c in enumerate(chr14_zscore):
+		colnames = map(str,range(c.shape[0]))
+		colnames = ['x'+ x for x in colnames]
+		rownames = list(colnames)
+		mf.numpy_matrix_2_dekker(c, colnames, rownames, 
+			'zscore/' + args.i[i][:-5] + '_zscore.matrix.gz')
 	
 
-	# polyfit
-	s = get_slope(interactions, time, 150)
-	z = np.polyfit(time, interactions, 2)
-	p = np.poly1d(z)
-	xp = np.linspace(-10, 1000, 100)
-	scatter_plot_slope(interactions, time, xp, p, s, 150,'test_10_slope.png')
+	# interactions = []
+	time = np.array([0, 5, 60, 120, 180, 240, 960])
+	# for h in chr14_list:
+	# 	interactions.append(h[80, 90])
+	
+
+	# # polyfit
+	# s = get_slope(interactions, time, 150)
+	# z = np.polyfit(time, interactions, 2)
+	# p = np.poly1d(z)
+	# xp = np.linspace(-10, 1000, 100)
+	# scatter_plot_slope(interactions, time, xp, p, s, 150,'test_10_slope.png')
 
 
-	interactions = []
-	for h in chr14_list:
-		interactions.append(h[80,180])
+	# interactions = []
+	# for h in chr14_list:
+	# 	interactions.append(h[80,180])
 
-	# polyfit
-	s = get_slope(interactions, time, 150)
-	z = np.polyfit(time, interactions, 2)
-	p = np.poly1d(z)
-	xp = np.linspace(-10, 1000, 100)
-	scatter_plot_slope(interactions, time, xp, p, s, 150, 'test_100_slope.png')
-	print interactions
+	# # polyfit
+	# s = get_slope(interactions, time, 150)
+	# z = np.polyfit(time, interactions, 2)
+	# p = np.poly1d(z)
+	# xp = np.linspace(-10, 1000, 100)
+	# scatter_plot_slope(interactions, time, xp, p, s, 150, 'test_100_slope.png')
+	# print interactions
 
-	interactions = []
-	for h in chr14_list:
-		interactions.append(h[80,85])
+	# interactions = []
+	# for h in chr14_list:
+	# 	interactions.append(h[80,85])
 
-	# polyfit
-	s = get_slope(interactions, time, 150)
-	z = np.polyfit(time, interactions, 2)
-	p = np.poly1d(z)
-	xp = np.linspace(-10, 1000, 100)
-	scatter_plot_slope(interactions, time, xp, p, s, 150, 'test_5_slope.png')
-	print interactions
+	# # polyfit
+	# s = get_slope(interactions, time, 150)
+	# z = np.polyfit(time, interactions, 2)
+	# p = np.poly1d(z)
+	# xp = np.linspace(-10, 1000, 100)
+	# scatter_plot_slope(interactions, time, xp, p, s, 150, 'test_5_slope.png')
+	# print interactions
 
-	interactions = []
-	for h in chr14_list:
-		interactions.append(h[80,120])
+	# interactions = []
+	# for h in chr14_list:
+	# 	interactions.append(h[80,120])
 
-	# polyfit
-	s = get_slope(interactions, time, 150)
-	z = np.polyfit(time, interactions, 2)
-	p = np.poly1d(z)
-	xp = np.linspace(-10, 1000, 100)
-	scatter_plot_slope(interactions, time, xp, p, s, 150, 'test_40_slope.png')
+	# # polyfit
+	# s = get_slope(interactions, time, 150)
+	# z = np.polyfit(time, interactions, 2)
+	# p = np.poly1d(z)
+	# xp = np.linspace(-10, 1000, 100)
+	# scatter_plot_slope(interactions, time, xp, p, s, 150, 'test_40_slope.png')
 
 
 	chrom = 'chr14'
@@ -237,9 +272,11 @@ def main():
 		print 'on row: ' + str(i)
 		for j in range((bins[1] - bins[0]) + 1):
 			interactions = []
-			for h in chr14_list:
+			for h in chr14_zscore:
 				interactions.append(h[i, j])
 			s = get_slope(interactions, time, 150)
+			if s < 1e-10:
+				s = 0.0
 			f['interactions'][bins[0] + i, bins[0] + j] = s
 	print f['interactions'][:]
 	print f['interactions'][bins[0] + 80, bins[0] + 90]
