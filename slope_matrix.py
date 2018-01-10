@@ -275,7 +275,7 @@ def main():
 			for h in chr14_zscore:
 				interactions.append(h[i, j])
 			s = get_slope(interactions, time, 150)
-			if s < 1e-10:
+			if s < 1e-15 and s > -1e-15:
 				s = 0.0
 			f['interactions'][bins[0] + i, bins[0] + j] = s
 	print f['interactions'][:]
