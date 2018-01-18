@@ -82,9 +82,9 @@ def scatter_plot_slope(i, t, xp, p, s, ts, out):
 	# ax.xaxis.set_tick_params(width=2)
 	# ax.yaxis.set_tick_params(width=2)
 	ax.set_xlabel(r'Minutes', fontsize=10)
-	ax.set_ylabel(r'Interactions', fontsize=10)
+	ax.set_ylabel(r'Z-score', fontsize=10)
 	ax.set_xlim([-10,1200])
-	ax.set_ylim([-10,6500])
+	#ax.set_ylim([-10,6500])
 	ax.scatter(t, i)
 
 	ax.plot(xp, p(xp))
@@ -97,7 +97,7 @@ def scatter_plot_slope(i, t, xp, p, s, ts, out):
 	tang_line = s*xp + b
 	plt.scatter(ts, p(ts), c='r')
 	plt.plot(xp, tang_line, c='r')
-	ax.text(800, 4000, 'slope = ' + str(round(s, 2)))
+	#ax.text(800, 4000, 'slope = ' + str(round(s, 2)))
 	plt.savefig(out, dpi=300)
 	plt.close()
 	return
@@ -210,55 +210,56 @@ def main():
 			'zscore/' + args.i[i][:-5] + '_zscore.matrix.gz')
 	
 
-	# interactions = []
+	interactions = []
 	time = np.array([0, 5, 60, 120, 180, 240, 960])
-	# for h in chr14_list:
-	# 	interactions.append(h[80, 90])
+	for h in chr14_zscore:
+		interactions.append(h[80, 90])
 	
 
-	# # polyfit
-	# s = get_slope(interactions, time, 150)
-	# z = np.polyfit(time, interactions, 2)
-	# p = np.poly1d(z)
-	# xp = np.linspace(-10, 1000, 100)
-	# scatter_plot_slope(interactions, time, xp, p, s, 150,'test_10_slope.png')
+	# polyfit
+	s = get_slope(interactions, time, 150)
+	z = np.polyfit(time, interactions, 2)
+	p = np.poly1d(z)
+	xp = np.linspace(-10, 1000, 100)
+	scatter_plot_slope(interactions, time, xp, p, s, 150,'test_10_slope.png')
 
 
-	# interactions = []
-	# for h in chr14_list:
-	# 	interactions.append(h[80,180])
+	interactions = []
+	for h in chr14_zscore:
+		interactions.append(h[80,180])
 
-	# # polyfit
-	# s = get_slope(interactions, time, 150)
-	# z = np.polyfit(time, interactions, 2)
-	# p = np.poly1d(z)
-	# xp = np.linspace(-10, 1000, 100)
-	# scatter_plot_slope(interactions, time, xp, p, s, 150, 'test_100_slope.png')
-	# print interactions
+	# polyfit
+	s = get_slope(interactions, time, 150)
+	z = np.polyfit(time, interactions, 2)
+	p = np.poly1d(z)
+	xp = np.linspace(-10, 1000, 100)
+	scatter_plot_slope(interactions, time, xp, p, s, 150, 'test_100_slope.png')
+	print interactions
 
-	# interactions = []
-	# for h in chr14_list:
-	# 	interactions.append(h[80,85])
+	interactions = []
+	for h in chr14_zscore:
+		interactions.append(h[80,85])
 
-	# # polyfit
-	# s = get_slope(interactions, time, 150)
-	# z = np.polyfit(time, interactions, 2)
-	# p = np.poly1d(z)
-	# xp = np.linspace(-10, 1000, 100)
-	# scatter_plot_slope(interactions, time, xp, p, s, 150, 'test_5_slope.png')
-	# print interactions
+	# polyfit
+	s = get_slope(interactions, time, 150)
+	z = np.polyfit(time, interactions, 2)
+	p = np.poly1d(z)
+	xp = np.linspace(-10, 1000, 100)
+	scatter_plot_slope(interactions, time, xp, p, s, 150, 'test_5_slope.png')
+	print interactions
 
-	# interactions = []
-	# for h in chr14_list:
-	# 	interactions.append(h[80,120])
+	interactions = []
+	for h in chr14_zscore:
+		interactions.append(h[80,120])
 
-	# # polyfit
-	# s = get_slope(interactions, time, 150)
-	# z = np.polyfit(time, interactions, 2)
-	# p = np.poly1d(z)
-	# xp = np.linspace(-10, 1000, 100)
-	# scatter_plot_slope(interactions, time, xp, p, s, 150, 'test_40_slope.png')
+	# polyfit
+	s = get_slope(interactions, time, 150)
+	z = np.polyfit(time, interactions, 2)
+	p = np.poly1d(z)
+	xp = np.linspace(-10, 1000, 100)
+	scatter_plot_slope(interactions, time, xp, p, s, 150, 'test_40_slope.png')
 
+	quit()
 
 	chrom = 'chr14'
 	chr_idx, = np.where(f['chrs'][:] == chrom)
