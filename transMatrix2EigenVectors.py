@@ -1,9 +1,5 @@
 #!/usr/bin/env python
 
-"""
-PCA on supplied matrix.  Extract PC1, PC2, PC3.  Works best on distance normalized matrix.
-"""
-
 from __future__ import print_function
 from __future__ import division
 
@@ -32,10 +28,6 @@ from math import cos,log,sin,sqrt
 from sklearn.decomposition import PCA
 from sklearn import decomposition
 
-# For eigenvectors and eigenvalues
-#from scipy.stats.stats import nanmean
-#from scipy import linalg as la
-#from scipy import weave 
 
 verboseprint=lambda *a, **k: None
 __version__ = "1.0"
@@ -43,11 +35,18 @@ debug = None
 
 def main():
     
-    parser=argparse.ArgumentParser(description='Extract c-data from HDF5 file into TXT (matrix.gz)',formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser=argparse.ArgumentParser(description='Run PCA on trans matrix and matrix transpose to return PC1s' +
+        ' corresponding to each chromosome. Note: No z-escore and correlation matrix transformations prior to PCA',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-    parser.add_argument('-i', '--input', dest='inputMatrix', type=str, required=True, help='interaction matrix hdf5 file')
-    parser.add_argument('-r', '--refseq', dest='refSeqFile', type=str, required=True, help='refseq file to calculate gene density per bin/PC')
-    parser.add_argument('-v', '--verbose', dest='verbose', action='count', help='Increase verbosity (specify multiple times for more)')
+    parser.add_argument('-i', '--input', dest='inputMatrix', type=str, required=True, 
+        help='trans interaction matrix hdf5 file')
+    parser.add_argument('-r', '--refseq', dest='refSeqFile', type=str, required=True, 
+        help='refseq file to calculate gene density per bin/PC')
+    parser.add_argument('-v', '--verbose', dest='verbose', action='count',
+        help='Increase verbosity (specify multiple times for more)')
+    parser.add_argument('-c', '--cworld', dest='cworldPath', type=str, required=True,
+        help='Path to cworld-dekker repository (e.g. ~/project/Research/ENCODE/cworld-dekker)')
     parser.add_argument('--version', action='version', version='%(prog)s 1.0')
     
     args=parser.parse_args()

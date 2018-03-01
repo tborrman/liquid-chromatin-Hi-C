@@ -191,9 +191,23 @@ def z_score(m):
 	return z
 
 
+def get_std(h):
+	"""
+	Get standard deviation for cis interactions per row
 
-
-
+	Args: 
+		h: hdf file object
+	Returns: 
+		s: list of standard deviations for cis interactions
+		per row across genome
+	"""
+	s = []
+	for c in ['chr' + x for x in map(str, range(1,23))] + ['chrX']:
+		m = get_cis_matrix(h, c)
+		# std for chrom
+		cm = np.nanstd(m, axis=1)
+		s = s + list(cm)
+	return s
 
 
 
