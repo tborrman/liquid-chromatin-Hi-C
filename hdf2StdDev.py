@@ -18,8 +18,10 @@ def main():
 	f = h5py.File(args.i, 'r')
 	std = mf.get_std(f)
 	# Write output
-	OUT = open('test_std.txt', 'w')
-	for i, b in enumerate(f['bin_positions'][:][:6087]):
+	OUT = open(args.i[:-5] + '_std.bedGraph', 'w')
+	# Only using 22 autosomes and X
+	y_chrom_bin_start =  f['chr_bin_range'][:][23][0]
+	for i, b in enumerate(f['bin_positions'][:][:y_chrom_bin_start]):
 		if b[0] == 22:
 			chrom = 'chrX'
 		else:
