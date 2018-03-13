@@ -3,23 +3,36 @@ options(scipen=100)
 df <- read.table("LOS_500kb.txt", sep="\t", header=TRUE)
 minutes <- c(5, 60, 120, 180, 240, 960)
 
-#LOS_half <- round(median(df$OVN_LOS, na.rm=TRUE)/2.0, 2)
+LOS_half <- round(median(df$OVN_LOS, na.rm=TRUE)/2.0, 2)
 
 # Sigmoid function with adjustable parameters
 exp_decay <- function(minutes, a, b, c) {
   return(a - (b*exp(-c*minutes)))
 }
 
+# Get half-life using exponential decay function 
+# solved for minutes at half-Loss of structure
+get_half_life <- function(LOS_half, a, b, c) {
+  hl <- -(log((a-LOS_half)/b, base=exp(1)) / c)
+  return(hl)
+}
+
 # Ex.chr1 49.5Mb-50Mb
 LOS <- as.numeric(df[100,4:9])
-LOS_half <- LOS[length(LOS)]/2
+LOS_start <- LOS[1]
+LOS_end <- LOS[length(LOS)]
+LOS_half <- LOS_start + ((LOS_end - LOS_start)/2)
+
 # Exponential decay fit
 fitModel <- nls(LOS ~ exp_decay(minutes, a, b, c), start = list(a=0.75, b=0.5, c=0.01), trace=TRUE)
 params <- coef(fitModel)
 x <- seq(-50,1000, 0.5)
 p <- predict(fitModel, list(minutes = x))
-hl_idx <- which.min(abs(p-LOS_half))
-half_life <- x[hl_idx]
+#hl_idx <- which.min(abs(p-LOS_half))
+#half_life <- x[hl_idx]
+half_life <- get_half_life(LOS_half, params["a"], params["b"], params["c"])
+
+
 
 png("plot_half_life/chr1_49.5Mb_exponential.png", height=1800, width=2500, res=300)
 plot(minutes, LOS, pch=20, col = "darkgreen", xlab="Minutes of DpnII Digestion",
@@ -29,7 +42,7 @@ h_linex <- seq(-50,half_life, 0.5)
 v_linex <- seq(-0.3, LOS_half, 0.001)
 lines(h_linex,rep(LOS_half, length(h_linex)), lty=2, col="blue")
 lines(rep(half_life, length(v_linex)), v_linex, lty=2, col="blue")
-text(700,0.2, bquote("t"[1/2] ~ "=" ~ .(half_life) ~ "min"), cex=1.5)
+text(700,0.2, bquote("t"[1/2] ~ "=" ~ .(round(half_life,2)) ~ "min"), cex=1.5)
 dev.off()
 
 
