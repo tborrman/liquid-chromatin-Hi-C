@@ -209,6 +209,35 @@ def get_std(h):
 		s = s + list(cm)
 	return s
 
+def get_cis_percent(h):
+	"""
+	Get cis percent per row 
+	
+	Args: 
+		h: hdf file object
+	Returns:
+		cp_list: list of cis percents per row across the genome
+	"""
+	cp_list = []
+	chr_bin_range = h['chr_bin_range'][:]
+	bin_positions = h['bin_positions'][:]
+	for i, row in enumerate(h['interactions'][:]):
+		chr_idx = bin_positions[i][0]
+		cis_range = chr_bin_range[chr_idx]
+		# Check if row is all nan
+		if np.all(np.isnan(row)) or np.nansum(row) == 0:
+			cp_list.append(np.nan)
+		else:
+			cis = np.nansum(row[cis_range[0]: cis_range[1] + 1])
+			total = np.nansum(row)
+			cp = (cis/total) * 100
+			cp_list.append(cp)
+	return cp_list
+		
+		
+
+		
+
 
 
 
