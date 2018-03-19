@@ -1,15 +1,15 @@
 # plot LOS metric for each chromosome at each time point
 options(scipen=100)
 #Get data
-min5 <- read.table("HBHiCK562DN10-5m-DPnII-R1__hg19__genome__C-500000-raw_scaleBy_6.68.balanced_scaleBy_53.35.LOS.bedGraph", sep="\t", header=TRUE)
-hour1 <- read.table("HBHiCK562DN10-1h-DpnII-R1__hg19__genome__C-500000-raw_scaleBy_8.9.balanced_scaleBy_55.21.LOS.bedGraph", sep="\t", header=TRUE)
-hour2 <- read.table("HBHiCK562DN10-2h-DpnII-R1__hg19__genome__C-500000-raw_scaleBy_4.56.balanced_scaleBy_55.65.LOS.bedGraph", sep="\t", header=TRUE)
-hour3 <- read.table("HBHiCK562DN10-3h-DpnII-R1__hg19__genome__C-500000-raw_scaleBy_4.54.balanced_scaleBy_56.08.LOS.bedGraph", sep="\t", header=TRUE)
-hour4 <- read.table("HBHiCK562DN10-4h-DpnII-R1__hg19__genome__C-500000-raw_scaleBy_4.12.balanced_scaleBy_56.03.LOS.bedGraph", sep="\t", header=TRUE)
-ON <- read.table("HBHiCK562DN10-ON-DpnII-R1__hg19__genome__C-500000-raw_scaleBy_3.89.balanced_scaleBy_56.69.LOS.bedGraph", sep="\t", header=TRUE)
+min5 <- read.table("HBHiCK562DN10-5m-DPnII-R1__hg19__genome__C-500000-iced_scaleBy_56.28_LOS.bedGraph", sep="\t", header=TRUE)
+hour1 <- read.table("HBHiCK562DN10-1h-DpnII-R1__hg19__genome__C-500000-iced_scaleBy_58.39_LOS.bedGraph", sep="\t", header=TRUE)
+hour2 <- read.table("HBHiCK562DN10-2h-DpnII-R1__hg19__genome__C-500000-iced_scaleBy_58.76_LOS.bedGraph", sep="\t", header=TRUE)
+hour3 <- read.table("HBHiCK562DN10-3h-DpnII-R1__hg19__genome__C-500000-iced_scaleBy_59.28_LOS.bedGraph", sep="\t", header=TRUE)
+hour4 <- read.table("HBHiCK562DN10-4h-DpnII-R1__hg19__genome__C-500000-iced_scaleBy_59.21_LOS.bedGraph", sep="\t", header=TRUE)
+ON <- read.table("HBHiCK562DN10-ON-DpnII-R1__hg19__genome__C-500000-iced_scaleBy_59.8_LOS.bedGraph", sep="\t", header=TRUE)
 
 
-for (chrom in c(paste("chr", 1:22, sep=""), "chrX", "chrY")) {
+for (chrom in c(paste("chr", 1:22, sep=""), "chrX")) {
 
   
   png(paste("plot_LOS/plot_LOS_", chrom, ".png",sep=""), width=8000, height=2000, res=400)
