@@ -18,45 +18,36 @@ colnames(hour3)[4] <- "h3_LOS"
 colnames(hour4)[4] <- "h4_LOS"
 colnames(ON)[4] <- "OVN_LOS"
 
-# Remove end column
-min5 <- min5[,-3]
-hour1 <- hour1[,-3]
-hour2 <- hour2[,-3]
-hour3 <- hour3[,-3]
-hour4 <- hour4[,-3]
-ON <- ON[,-3]
-
 # Merging
-m <- merge(min5, hour1, by=c("chrom", "start"), all=TRUE)
-m <- merge(m, hour2, by=c("chrom", "start"), all=TRUE)
-m <- merge(m, hour3, by=c("chrom", "start"), all=TRUE)
-m <- merge(m, hour4, by=c("chrom", "start"), all=TRUE)
-m <- merge(m, ON, by=c("chrom", "start"), all=TRUE)
+m <- merge(min5, hour1, by=c("chrom", "start", "end"), all=TRUE)
+m <- merge(m, hour2, by=c("chrom", "start", "end"), all=TRUE)
+m <- merge(m, hour3, by=c("chrom", "start", "end"), all=TRUE)
+m <- merge(m, hour4, by=c("chrom", "start", "end"), all=TRUE)
+m <- merge(m, ON, by=c("chrom", "start", "end"), all=TRUE)
 
 m <- OrderChromStart(m)
+
 
 minutes <- c(5, 60, 120, 180, 240, 960)
 
 # Example half-life
 png("plot_LOS/chr1_49.5Mb_hl.png", height=1800, width=2500, res=300)
-  plot(minutes, m[100, 3:8], xlab = "Minutes of DpnII Digestion", 
+  plot(minutes, m[100, 4:9], xlab = "Minutes of DpnII Digestion", 
        ylab= "Loss of Structure", type='o', pch=20, col="chartreuse4",
        main="Chr1:49.5Mb-50Mb",ylim=c(-0.3,0.9))
 dev.off()
 
 # Genome wide at 500kb
-b <- boxplot(m[3:8])
+b <- boxplot(m[4:9])
 png("plot_LOS/genome_LOS.png", height=1800, width=2500, res=300)
-boxplot(m[3:8], ylim=c(-0.3,0.9), at=minutes, boxwex=50, names=minutes, 
+boxplot(m[4:9], ylim=c(-0.3,0.9), at=minutes, boxwex=50, names=minutes, 
     xlab="Minutes of DpnII Digestion", outline=FALSE,
     ylab= "Loss of Structure", main= "Genome", col="chartreuse4")
 lines(minutes, b$stats[3,], col="black")
 dev.off()
 
-end <- m$start + 500000
-o <- cbind(m[1:2], end, m[3:8])
 # Write LOS data to table
-write.table(o, "LOS_500kb.txt", sep="\t", col.names=TRUE, row.names=FALSE, quote=FALSE)
+write.table(m, "LOS_500kb.txt", sep="\t", col.names=TRUE, row.names=FALSE, quote=FALSE)
 
 # Compartments ####################################################################################
 eigenPath <- "C:/cygwin64/home/Tyler/Research/digest/cis_percent/compartment/HBHiC-K562-MN-Dp-1__hg19__genome__C-500000-raw_scaleBy_2.72.balanced_scaleBy_51.45__all.zScore.eigen1.sorted.bedGraph"
@@ -78,19 +69,19 @@ A <- A[rowSums(is.na(A)) != ncol(A),]
 B <- B[rowSums(is.na(B)) != ncol(B),]
 
 # Compartments at 500kb
-b <- boxplot(A[3:8])
+b <- boxplot(A[4:9])
 A_med <- b$stats[3,]
 png("plot_LOS/A_compartment_LOS.png", height=1800, width=2500, res=300)
-boxplot(A[3:8], ylim=c(-0.3,0.9), at=minutes, boxwex=50, names=minutes, 
+boxplot(A[4:9], ylim=c(-0.3,0.9), at=minutes, boxwex=50, names=minutes, 
         xlab="Minutes of DpnII Digestion", outline=FALSE,
         ylab= "Loss of Structure", main= "A compartment", col="red")
 lines(minutes, A_med, col="black")
 dev.off()
 
-b <- boxplot(B[3:8])
+b <- boxplot(B[4:9])
 B_med <- b$stats[3,]
 png("plot_LOS/B_compartment_LOS.png", height=1800, width=2500, res=300)
-boxplot(B[3:8], ylim=c(-0.3,0.9), at=minutes, boxwex=50, names=minutes, 
+boxplot(B[4:9], ylim=c(-0.3,0.9), at=minutes, boxwex=50, names=minutes, 
         xlab="Minutes of DpnII Digestion", outline=FALSE,
         ylab= "Loss of Structure", main= "B compartment", col="blue")
 lines(minutes, B_med, col="black")
@@ -98,12 +89,12 @@ dev.off()
 
 # Overplot
 png("plot_LOS/A_B_compartment_LOS.png", height=1800, width=2500, res=300)
-boxplot(A[3:8], ylim=c(-0.3,0.9), at=minutes, boxwex=50, names=minutes, 
+boxplot(A[4:9], ylim=c(-0.3,0.9), at=minutes, boxwex=50, names=minutes, 
         xlab="Minutes of DpnII Digestion", outline=FALSE,
         ylab= "Loss of Structure", main= "A and B compartments", col="red")
 lines(minutes, A_med, col="red")
 
-boxplot(B[3:8], at=minutes, boxwex=50,
+boxplot(B[4:9], at=minutes, boxwex=50,
         col="blue", add=TRUE, outline=FALSE, names=FALSE)
 lines(minutes, B_med, col="blue")
 dev.off()
