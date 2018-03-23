@@ -66,10 +66,10 @@ if (args$f) {
   
   png("chr1_49.5Mb_exponential.png", height=1800, width=2500, res=300)
   plot(minutes, LOS, pch=20, col = "darkgreen", xlab="Minutes of DpnII Digestion",
-       ylab= "Loss of Structure",main= "Chr1:49.5Mb-50Mb", ylim=c(-0.03,0.7))
+       ylab= "Loss of Structure",main= "Chr1:49.5Mb-50Mb", ylim=c(-0.3,0.7))
   lines(x,p, col="chartreuse4")
   h_linex <- seq(-50,half_life, 0.5)
-  v_linex <- seq(-0.3, LOS_half, 0.001)
+  v_linex <- seq(-0.5, LOS_half, 0.001)
   lines(h_linex,rep(LOS_half, length(h_linex)), lty=2, col="blue")
   lines(rep(half_life, length(v_linex)), v_linex, lty=2, col="blue")
   text(700,0.2, bquote("t"[1/2] ~ "=" ~ .(round(half_life,2)) ~ "min"), cex=1.5)
@@ -105,7 +105,8 @@ if (args$f) {
     chrom_mid <- mid[dfHL$chrom == chrom]
     chrom_hl <- dfHL$half_lives[dfHL$chrom == chrom]
     plot(chrom_mid, chrom_hl, type='l', col="chartreuse4", xlab= chrom,
-         ylab=bquote("t"[1/2] ~ "(minutes)"), cex.lab = 2, ylim=c(0,500))
+         ylab=bquote("t"[1/2] ~ "(minutes)"), cex.lab = 2, ylim=c(0,300),
+         main= "Loss of Structure", cex.main=2)
     dev.off()
   }
 }
