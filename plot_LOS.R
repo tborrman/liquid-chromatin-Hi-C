@@ -19,7 +19,7 @@ for (chrom in c(paste("chr", 1:22, sep=""), "chrX")) {
     chrom_mid <- mid[min5$chrom == chrom]
     chrom_LOS <- min5$LOS[min5$chrom == chrom]
     plot(chrom_mid, chrom_LOS, type='l', col="blue", xlab= chrom,
-         ylab="Loss of Structure", cex.lab = 2, ylim=c(-0.15, 1))
+         ylab="Loss of Structure", cex.lab = 2, ylim=c(-0.30, 0.85))
     #hour1
     mid <- hour1$start + (abs(hour1$end - hour1$start)/2.0)
     chrom_mid <- mid[hour1$chrom == chrom]
@@ -46,7 +46,7 @@ for (chrom in c(paste("chr", 1:22, sep=""), "chrX")) {
     chrom_LOS <- ON$LOS[ON$chrom == chrom]
     lines(chrom_mid, chrom_LOS, type='l', col="limegreen")
   par(xpd=TRUE)
-  legend(max(chrom_mid) + 15000000,1.02, legend=c("OVN", "4h", "3h", "2h", "1h", "5min"), lty=1,
+  legend(max(chrom_mid) + 13000000, 0.85, legend=c("OVN", "4h", "3h", "2h", "1h", "5min"), lty=1,
          col=c("limegreen", "cyan", "magenta", "red", "purple", "blue"))
   dev.off()
 }
