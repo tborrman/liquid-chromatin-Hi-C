@@ -107,7 +107,7 @@ def main():
 	copynum = get_copynumber_states(means, probs_full)
 
 	# Write copy number results to file
-	OUT=open('GMM_post_probs.txt', 'w')
+	OUT=open(args.d[:-4] + '_GMM.txt', 'w')
 	OUT.write('chrom\tstart\tend\treads\t' + str(means[0]) +'\t'+ str(means[1]) +
 		'\t'+ str(means[2]) + '\tcopy\n')
 	for i in range(len(dpnII)):
