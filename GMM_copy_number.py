@@ -6,6 +6,7 @@ from sklearn import mixture
 
 parser=argparse.ArgumentParser(description='Fit a Gaussian Mixture Model to the DpnII signal data to extract copy number states')
 parser.add_argument('-d', help='DpnII signal bed file (ex. dpnII_coverage_sorted.bed)', type=str, required=True, dest='d')
+parser.add_argument('-s', help='standard deviation for outlier cutoff (ex. 1.75)', type=float, required=True, dest='s')
 args=parser.parse_args()
 
 def get_outlier_cutoffs(r, s):
@@ -25,6 +26,10 @@ def get_outlier_cutoffs(r, s):
 	# Get cutoffs
 	minr = np.mean(rnz) - (np.std(rnz) * s)
 	maxr = np.mean(rnz) + (np.std(rnz) * s)
+	# Exclude zeros
+	if minr <= 0:
+		minr = 1
+	
 	return minr, maxr
 
 def remove_outliers(d, min_reads, max_reads):
@@ -76,7 +81,7 @@ def main():
 	dpnII_chr = np.genfromtxt(args.d, delimiter='\t', usecols=(0), dtype=str)
 	dpnII = np.genfromtxt(args.d, delimiter='\t', usecols=(1,2,3))
 
-	mino, maxo = get_outlier_cutoffs(dpnII[:,2], 2)
+	mino, maxo = get_outlier_cutoffs(dpnII[:,2], args.s)
 
 	df = remove_outliers(dpnII, mino, maxo)
 

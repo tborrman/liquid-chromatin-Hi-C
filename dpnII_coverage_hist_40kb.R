@@ -13,34 +13,35 @@ print(head(df))
 max_x <- mean(df$reads) + (sd(df$reads)*2.5)
 
 xvals <- seq(0,max(df$reads), 5)
-weights <- c(0.33, 0.48, 0.2)
+# In order of ploidy
+weights <- c(0.34, 0.40, 0.26)
 
 
 png(gsub(".{4}$", "_hist.png", args$i), width=2500, height=2000, res=300)
 par(mar=c(5,5,4,2) + 0.1)
-hist(df$reads, breaks=seq(0, max(df$reads) + 10, 10), lty="blank", col="gray60",
- xlim=c(0,max_x), xlab= "Number of reads overlapping 500kb bin",
- main = "", freq=FALSE, ylim=c(0,0.0015))
+hist(df$reads, breaks=seq(0, max(df$reads) + 2, 2), lty="blank", col="gray60",
+ xlim=c(0,max_x), xlab= "Number of reads overlapping 40kb bin",
+ main = "", freq=FALSE, ylim=c(0,0.008))
 
 # 1st Gaussian
-mu = 1880.64
-sigma = sqrt(82175.58)
+mu = 172.3
+sigma = sqrt(2306.97)
 abline(v= mu, col='blue')
 abline(v= mu + sigma, col='blue', lty=2)
 abline(v= mu - sigma, col='blue', lty=2)
 lines(xvals, dnorm(xvals, mean= mu, sd= sigma)*weights[1], col="blue", lw=1.5)
 
 # 2nd Gaussian
-mu = 2827.29
-sigma = sqrt(36356.78)
+mu = 219.37
+sigma = sqrt(2620.27)
 abline(v= mu, col='red')
 abline(v= mu + sigma, col='red', lty=2)
 abline(v= mu - sigma, col='red', lty=2)
 lines(xvals, dnorm(xvals, mean= mu, sd= sigma)*weights[2], col="red", lw=1.5)
 
 # 3rd Gaussian
-mu = 3740.92
-sigma = sqrt(104351.79)
+mu = 276.64
+sigma = sqrt(3118.7)
 abline(v= mu, col='green')
 abline(v= mu + sigma, col='green', lty=2)
 abline(v= mu - sigma, col='green', lty=2)
