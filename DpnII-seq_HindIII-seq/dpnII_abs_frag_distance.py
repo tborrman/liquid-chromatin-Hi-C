@@ -2,6 +2,7 @@
 import argparse
 import sys
 import os
+
 # Flush STOUT continuously
 sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
@@ -9,6 +10,7 @@ parser = argparse.ArgumentParser(description='Write list of distances to closest
 	'(distance reported is the minimum distance from either fragment end)')
 parser.add_argument('-s', help='SAM file with alignment reads (bowtie_output_mapped.sam)', type=str, required=True)
 parser.add_argument('-o', help='output zero-distance and nonzero-distance fragment files', type= bool, default= False)
+parser.add_argument('-c', help='cutoff for nucleotide distance to restriction site (ex. 3)', type=int, default=3)
 args = parser.parse_args()
 
 def write_distance_files(l1, l2, Zf, nonZf, min_d):
@@ -21,12 +23,28 @@ def write_distance_files(l1, l2, Zf, nonZf, min_d):
 		l2: string read 2 (SAM line)
 		Zf: filehandle zero distance fragments
 		nonZf: filehandle non zero distance fragments
-		min_d: minumum distance to dpnII site for fragment
+		min_d: minimum distance to dpnII site for fragment
 	'''
 	if min_d == 0:
 		Zf.write(l1 + l2)
 	else:
 		nonZf.write(l1 + l2)
+
+def write_cutoff_file(l1, l2, cf, min_d, c):
+	'''
+	Write fragments into file for fragments which are less than
+	or equal to c distance away from a dpnII site
+
+	Args: 
+		l1: string read 1 (SAM line)
+		l2: string read 2 (SAM line)
+		cf: filehandle cutoff distance fragments
+		min_d: minimum distance to dpnII site for fragment
+		c: cutoff for distance to dpnII site
+	'''
+	if min_d <= c:
+		cf.write(l1 + l2)
+
 
 def main():
 
@@ -53,6 +71,7 @@ def main():
 	if args.o:
 		ZERO_DIST_OUT = open('zero_distance_'+index, 'w')
 		NONZERO_DIST_OUT = open('nonzero_distance_'+index, 'w')
+	CUTOFF_DIST_OUT = open(str(args.c) + '_distance_'+index, 'w')
 	counter = 0
 	while True:
 		line1=SAM.readline()
@@ -87,8 +106,11 @@ def main():
 			if args.o:
 				write_distance_files(line1, line2, ZERO_DIST_OUT, NONZERO_DIST_OUT, min_distance)
 			OUT.write(str(min_distance) + '\n')
+			write_cutoff_file(line1, line2, CUTOFF_DIST_OUT, min_distance, args.c)
+
 	SAM.close()
 	OUT.close()
+	CUTOFF_DIST_OUT.close()
 	if args.o:
 		ZERO_DIST_OUT.close()
 		NONZERO_DIST_OUT.close()
