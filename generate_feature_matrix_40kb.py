@@ -13,7 +13,7 @@ def check_coordinates(l, f):
 def main():
 
 	features = [
-		('half-life/half-life_exponential_40kb.bed', 'half-life_LOS'),
+		('half-life/half-life_exponential_40kb_removed_outliers.bedGraph', 'half-life_LOS'),
 		('half-life_std/half-life_std_exponential_40kb.bed', 'half-life_std'),
 		('LOS/HBHiCK562DN10-5m-DPnII-R1__hg19__genome__C-40000-iced_scaleBy_0.39_LOS.bedGraph_noheader', 'LOS_5m'),
 		('LOS/HBHiCK562DN10-1h-DpnII-R1__hg19__genome__C-40000-iced_scaleBy_0.39_LOS.bedGraph_noheader', 'LOS_1h'),
@@ -27,14 +27,23 @@ def main():
 		('ChIP-seq/ENCFF685PCO_H3K27ac_R2_40kb.bedGraph', 'H3K27ac_R2'),
 		('ChIP-seq/ENCFF463AQS_H3K4me1_R1_40kb.bedGraph', 'H3K4me1_R1'),
 		('ChIP-seq/ENCFF624RNZ_H3K4me1_R2_40kb.bedGraph', 'H3K4me1_R2'),
+		('ChIP-seq/ENCFF778DNU_H3K4me2_R1_40kb.bedGraph', 'H3K4me2_R1'),
+		('ChIP-seq/ENCFF622YGE_H3K4me2_R2_40kb.bedGraph', 'H3K4me2_R2'),
+		('ChIP-seq/ENCFF330TJF_H3K4me3_R1_40kb.bedGraph', 'H3K4me3_R1'),
+		('ChIP-seq/ENCFF803FOA_H3K4me3_R2_40kb.bedGraph', 'H3K4me3_R2'),
 		('ChIP-seq/ENCFF242XLB_H4K20me1_R1_40kb.bedGraph', 'H4K20me1_R1'),
 		('ChIP-seq/ENCFF474KOM_H4K20me1_R2_40kb.bedGraph', 'H4K20me1_R2'),
 		('ChIP-seq/ENCFF430FSQ_H2AFZ_R1_40kb.bedGraph', 'H2AFZ_R1'),
 		('ChIP-seq/ENCFF551PZO_H2AFZ_R2_40kb.bedGraph', 'H2AFZ_R2'),
+		('ChIP-seq/ENCFF526UWC_H3K9me1_R1_40kb.bedGraph', 'H3K9me1_R1'),
 		('ChIP-seq/ENCFF700FQH_H3K9me3_R1_40kb.bedGraph', 'H3K9me3_R1'),
 		('ChIP-seq/ENCFF742JJQ_H3K9me3_R2_40kb.bedGraph', 'H3K9me3_R2'),
+		('ChIP-seq/ENCFF527JUP_H3K9ac_R1_40kb.bedGraph', 'H3K9ac_R1'),
+		('ChIP-seq/ENCFF098LBU_H3K9ac_R2_40kb.bedGraph', 'H3K9ac_R2'),
 		('ChIP-seq/ENCFF936BVT_H3K27me3_R1_40kb.bedGraph', 'H3K27me3_R1'),
 		('ChIP-seq/ENCFF274JTE_H3K27me3_R2_40kb.bedGraph', 'H3K27me3_R2'),
+		('ChIP-seq/ENCFF619JRY_H3K79me2_R1_40kb.bedGraph', 'H3K79me2_R1'),
+		('ChIP-seq/ENCFF453XIK_H3K79me2_R2_40kb.bedGraph', 'H3K79me2_R2'),
 		('ChIP-seq/ENCFF545UAE_CTCF_R1_40kb.bedGraph', 'CTCF_R1'),
 		('ChIP-seq/ENCFF061IVP_CTCF_R2_40kb.bedGraph', 'CTCF_R2'),
 		('DNase-seq/ENCFF111KJD_DNase_R1_40kb.bedGraph', 'DNase-seq_R1'),
@@ -65,10 +74,22 @@ def main():
 		('ChIP-seq/remodellers/ENCFF864WOR_WHSC1_R1_40kb.bedGraph','WHSC1'),
 		('ChIP-seq/remodellers/ENCFF427QTV_PHF8_R1_R2_40kb.bedGraph','PHF8'),
 		('ChIP-seq/remodellers/ENCFF518QUW_REST_R1_R2_40kb.bedGraph','REST'),
-		('tad/Houda_Ctrl_DpnII_K562.40000_allchr.txt--is480000--nt0.1--ids320000--ss40000--immean.insulation.bpfix.bed', 'TAD_insulation')
+		('ChIP-seq/remodellers/ENCFF734YKJ_KDM1A_R1_R2_40kb.bedGraph', 'KDM1A_Snyder1'),
+		('ChIP-seq/remodellers/ENCFF758MEL_KDM1A_R1_R2_40kb.bedGraph', 'KDM1A_Snyder2'),
+		('tad/Houda_Ctrl_DpnII_K562.40000_allchr.txt--is480000--nt0.1--ids320000--ss40000--immean.insulation.bpfix.bed', 'TAD_insulation'),
+		('Repli-Seq/ENCFF001GRX_G1_40kb.bedGraph', 'G1_Repli-seq'),
+		('Repli-Seq/ENCFF001GSF_S1_40kb.bedGraph', 'S1_Repli-seq'),
+		('Repli-Seq/ENCFF001GSJ_S2_40kb.bedGraph', 'S2_Repli-seq'),
+		('Repli-Seq/ENCFF001GSN_S3_40kb.bedGraph', 'S3_Repli-seq'),
+		('Repli-Seq/ENCFF001GSP_S4_40kb.bedGraph', 'S4_Repli-seq'),
+		('Repli-Seq/ENCFF001GSB_G2_40kb.bedGraph', 'G2_Repli-seq'),
+		('WGBS/ENCFF867JRG_WGBS_R1_liftOverhg19_40kb.bedGraph', 'WGBS_R1'),
+		('WGBS/ENCFF721JMB_WGBS_R2_liftOverhg19_40kb.bedGraph', 'WGBS_R2'),
+		('NADs/NADs_HeLa_2010_40kb.bedGraph', 'NADs_HeLA'),
+		('NADs/NADs_IMR90_2017_40kb.bedGraph', 'NADs_IMR90')
 		]
 	IN = open('hg19_40kb.bed', 'r')
-	OUT = open('feature_matrix_40kb.txt', 'w')
+	OUT = open('feature_matrix_v2_40kb.txt', 'w')
 	header = ['chrom', 'start', 'end']
 	for f in features:
 		header.append(f[1])
