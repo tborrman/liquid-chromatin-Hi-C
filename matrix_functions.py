@@ -89,6 +89,7 @@ def get_cis_matrix(f, chrom):
 	
 	Args:
 		f: h5py Hi-C file object
+		chrom: string (ex. 'chr1')
 	Returns:
 		c: numpy cis interaciton matrix for 
 			chrom
@@ -181,9 +182,9 @@ def z_score(m):
 	for k in range(-numrows + 1, numrows):
 		d_indices = kth_diag_indices(z, k)
 		obs = z[d_indices]
-		mu = np.mean(z[d_indices])
-		sigma = np.std(z[d_indices])
-		if sigma != 0:
+		mu = np.nanmean(z[d_indices])
+		sigma = np.nanstd(z[d_indices])
+		if sigma != 0 and not np.isnan(mu) and not np.isnan(sigma):
 			zscore = (obs - mu) / sigma
 		else:
 			zscore = [np.nan]*len(obs)
