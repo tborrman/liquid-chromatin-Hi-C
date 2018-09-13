@@ -3,7 +3,7 @@
 library(argparse)
 options(scipen=100)
 parser <- ArgumentParser(description="input std timepoint and return delta std")
-parser$add_argument("-i", help="input cis percent timepoint file (ex. *_std.bedGraph)", type="character",
+parser$add_argument("-i", help="input std timepoint file (ex. *_std.bedGraph)", type="character",
                     required=TRUE)
 parser$add_argument("-m", help="Mock nuclei control std.bedGraph", type="character", required=TRUE)
 args <- parser$parse_args()
