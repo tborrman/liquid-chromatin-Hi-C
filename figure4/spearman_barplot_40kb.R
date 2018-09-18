@@ -49,11 +49,20 @@ for (chrom in c(paste("chr", 1:22, sep=""), "chrX")) {
   ordered_labels <- factor(order_bar$new_labels, levels = order_bar$new_labels, ordered=TRUE)
   order_bar$new_labels <- ordered_labels
   
+  mycolors <- ifelse(order_bar$cor_hlLOS < 0, "red", "dodgerblue")
+  
   pdf(paste("chrom_barplots/", chrom, "_cor_los_halflife_40kb.pdf", sep=""), height=8, width=7.5)
-  print(ggplot(order_bar, aes(x=new_labels, y=cor_hlLOS)) +
-    geom_bar(stat = "identity", fill= "dodgerblue") +
+  print(ggplot(order_bar, aes(x=new_labels, y=cor_hlLOS, fill=new_labels)) +
+    geom_bar(stat = "identity") +
+    scale_fill_manual(values=mycolors) +
     coord_flip() + labs(x = "", y = expression(rho)) +
     ylim(-0.8, 0.8) + 
-    theme_minimal())
+    theme_bw() + 
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+          panel.border = element_blank(),
+          axis.line.x = element_line(colour="black"), axis.ticks.y = element_blank(),
+          legend.position="none")
+    )
   dev.off()
 }
+
