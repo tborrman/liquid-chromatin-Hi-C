@@ -61,7 +61,7 @@ segments <- seq(50,275,15)
 for (i in 1:(length(segments)-1)) {
   seg_df <- data.frame(z_df[df_no_out$halflife_LOS >= segments[i] & df_no_out$halflife_LOS < segments[i+1],2:ncol(dff)], check.names=FALSE)
   #test_seg <- data.frame(test[dff$halflife_LOS >= segments[i] & dff$halflife_LOS < segments[i+1],1:ncol(dff)])
-  r <- apply(seg_df, 2, median, na.rm=TRUE)
+  r <- apply(seg_df, 2, mean, na.rm=TRUE)
   print(r)
   hl_heatmap <- rbind(hl_heatmap,r)
 }
@@ -75,7 +75,7 @@ colnames(t_hl_heatmap) <- c("50-65",
                             "200-215", "215-230", "230-245", 
                             "245-260", "260-275")
 
-png("half-life_segmented_genome.png", width=3500, height=3500, res=300)
+png("half-life_segmented_genome_mean.png", width=3500, height=3500, res=300)
 pheatmap(t_hl_heatmap,color=rev(colorRampPalette(rev(brewer.pal(n = 7, name ="RdYlBu")))(100)), 
          cluster_cols=FALSE)
 dev.off()

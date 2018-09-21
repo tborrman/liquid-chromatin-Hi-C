@@ -65,10 +65,11 @@ for (chrom in c(paste("chr", 1:22, sep=""), "chrX")) {
   
   segments <- seq(100,250,10)
   
+  
   for (i in 1:(length(segments)-1)) {
     seg_df <- data.frame(z_df[df_no_out$halflife_LOS >= segments[i] & df_no_out$halflife_LOS < segments[i+1],2:ncol(df_no_out)], check.names=FALSE)
     order_df <- seg_df[,order(cor_hlLOS)]
-    r <- apply(order_df, 2, median, na.rm=TRUE)
+    r <- apply(order_df, 2, mean, na.rm=TRUE)
     print(r)
     hl_heatmap <- rbind(hl_heatmap,r)
   }
@@ -82,16 +83,21 @@ for (chrom in c(paste("chr", 1:22, sep=""), "chrX")) {
                               "200-210", "210-220", "220-230", 
                               "230-240", "240-250")
   
-  png(paste("chrom_heatmaps/half-life_segmented_", chrom,".png", sep=""), width=3500, height=3500, res=300)
+  png(paste("chrom_heatmaps/mean/half-life_segmented_", chrom,".png", sep=""), width=3500, height=3500, res=300)
   pheatmap(t_hl_heatmap,color=rev(colorRampPalette(rev(brewer.pal(n = 7, name ="RdYlBu")))(100)), 
            cluster_cols=FALSE, cluster_rows = FALSE)
   dev.off()
   
-  pdf(paste("chrom_heatmaps/half-life_segmented_", chrom,".pdf", sep=""), width=8, height=8, onefile=FALSE)
+  pdf(paste("chrom_heatmaps/mean/half-life_segmented_", chrom,".pdf", sep=""), width=8, height=8, onefile=FALSE)
   pheatmap(t_hl_heatmap,color=rev(colorRampPalette(rev(brewer.pal(n = 7, name ="RdYlBu")))(100)), 
            cluster_cols=FALSE, cluster_rows = FALSE)
   dev.off()
   
+  # Histogram
+  pdf(paste("chrom_hist/mean/half-life_hist_", chrom, ".pdf", sep=""), width=8, height=3)
+  hist(df_no_out$halflife_LOS, breaks=seq(0, 500, 10), xlim=c(100, 250), xlab="",
+       main="", col="gray")
+  dev.off()
 }
 
 
