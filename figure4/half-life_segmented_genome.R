@@ -48,10 +48,14 @@ dff <- dff[!is.na(dff$halflife_LOS), ]
 
 # Remove outliers
 df_no_out <- data.frame(apply(dff, 2, remove_outliers_std))
+# Remove half-life NA rows from outlier detection
+df_no_out <- df_no_out[!is.na(df_no_out$halflife_LOS), ]
+# Correlation for ordering
+c <- as.data.frame(cor(df_no_out, use="pairwise.complete.obs", method="spearman"))
+cordf <- data.frame(c)
+cor_hlLOS <- cordf$halflife_LOS[2:length(cordf$halflife_LOS)]
 
 hl_heatmap <- data.frame()
-
-
 # Make zscore df
 z_df <- data.frame(apply(df_no_out, 2, z_score), check.names=FALSE)
 
@@ -59,13 +63,13 @@ z_df <- data.frame(apply(df_no_out, 2, z_score), check.names=FALSE)
 segments <- seq(50,275,15)
 
 for (i in 1:(length(segments)-1)) {
-  seg_df <- data.frame(z_df[df_no_out$halflife_LOS >= segments[i] & df_no_out$halflife_LOS < segments[i+1],2:ncol(dff)], check.names=FALSE)
-  #test_seg <- data.frame(test[dff$halflife_LOS >= segments[i] & dff$halflife_LOS < segments[i+1],1:ncol(dff)])
-  r <- apply(seg_df, 2, mean, na.rm=TRUE)
+  seg_df <- data.frame(z_df[df_no_out$halflife_LOS >= segments[i] & df_no_out$halflife_LOS < segments[i+1],2:ncol(df_no_out)], check.names=FALSE)
+  order_df <- seg_df[,order(cor_hlLOS)]
+  r <- apply(order_df, 2, mean, na.rm=TRUE)
   print(r)
   hl_heatmap <- rbind(hl_heatmap,r)
 }
-colnames(hl_heatmap) <- colnames(df_no_out)[2:ncol(df_no_out)]
+colnames(hl_heatmap) <- colnames(order_df)
 
 t_hl_heatmap <- t(hl_heatmap)
 colnames(t_hl_heatmap) <- c("50-65",
@@ -75,9 +79,16 @@ colnames(t_hl_heatmap) <- c("50-65",
                             "200-215", "215-230", "230-245", 
                             "245-260", "260-275")
 
-png("half-life_segmented_genome_mean.png", width=3500, height=3500, res=300)
+pdf("half-life_segmented_genome_mean.pdf", width=8, height=8, onefile=FALSE)
 pheatmap(t_hl_heatmap,color=rev(colorRampPalette(rev(brewer.pal(n = 7, name ="RdYlBu")))(100)), 
-         cluster_cols=FALSE)
+         cluster_cols=FALSE, cluster_rows=FALSE)
 dev.off()
+
+# Histogram
+pdf(paste("half-life_hist_genome.pdf", sep=""), width=8, height=3)
+hist(df_no_out$halflife_LOS, breaks=seq(20, 500, 15), xlim=c(50, 275), xlab="",
+     main="", col="gray")
+dev.off()
+
 
 
