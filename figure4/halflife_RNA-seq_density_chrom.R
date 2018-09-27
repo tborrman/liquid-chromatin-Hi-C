@@ -131,12 +131,30 @@ for (chrom in c(paste("chr", 1:22, sep=""), "chrX")) {
     xlim(0,400) +
     ylim(0,0.020) +
     xlab(bquote("t"[1/2] ~ "(minutes)")) +
-    ggtitle("total RNA-seq (+) strand") + 
     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
           panel.background = element_blank(), axis.line = element_line(colour = "black"),
           legend.key = element_rect(fill="white")) +
     labs(color="RNA-seq signal") + 
     scale_color_manual(values=rev(brewer.pal(n = 4, name ="RdYlBu")))
+  )
+  dev.off()
+  
+  pdf(paste("chrom_RNAseq/", chrom, "half-life_RNA-seq_total_+_R1_density_quartiles_cumulative.pdf", sep=""), 
+      width=7, height=5)
+  print(
+    ggplot() +
+      stat_ecdf(data=q1, aes(x=hl, color="Q1"), geom="line") +
+      stat_ecdf(data=q2, aes(x=hl, color="Q2"), geom="line") +
+      stat_ecdf(data=q3, aes(x=hl, color="Q3"), geom="line") +
+      stat_ecdf(data=q4, aes(x=hl, color="Q4"), geom="line") +
+      xlim(50,350) +
+      xlab(bquote("t"[1/2] ~ "(minutes)")) +
+      ylab("F(x)") +
+      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+            panel.background = element_blank(), axis.line = element_line(colour = "black"),
+            legend.key = element_rect(fill="white")) +
+      labs(color="RNA-seq signal") + 
+      scale_color_manual(values=rev(brewer.pal(n = 4, name ="RdYlBu")))
   )
   dev.off()
   

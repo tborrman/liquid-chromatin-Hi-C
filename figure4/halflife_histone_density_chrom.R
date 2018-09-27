@@ -44,4 +44,27 @@ for (chrom in c(paste("chr", 1:22, sep=""), "chrX")) {
           scale_color_discrete(breaks=c("H3K9ac", "H3K4me1", "H3K36me3", "H3K9me3"))
         )
   dev.off()
+  
+  pdf(paste("chrom_histone/", chrom, "_half-life_histone_density_cumulative.pdf", sep=""),
+      width=7, height=5)
+  print(
+    ggplot() + 
+      #stat_density(data=upq_H3K9me1_R1, aes(x=hl, color="H3K9me1"), geom="line") +
+      stat_ecdf(data=upq_H3K9ac_R1, aes(x=hl, color="H3K9ac"), geom="line") +
+      #stat_density(data=upq_H4K20me1_R1, aes(x=hl, color="H4K20me1"), geom="line") +
+      stat_ecdf(data=upq_H3K4me1_R1 , aes(x=hl, color="H3K4me1"), geom="line") +
+      #stat_density(data=upq_H3K27ac_R1 , aes(x=hl, color="H3K27ac"), geom="line") +
+      #stat_density(data=upq_H2AFZ_R1 , aes(x=hl, color="H2AFZ"), geom="line") +
+      #stat_density(data=upq_H3K27me3_R1 , aes(x=hl, color="H3K27me3"), geom="line") +
+      stat_ecdf(data=upq_H3K36me3_R1 , aes(x=hl, color="H3K36me3"), geom="line") +
+      stat_ecdf(data=upq_H3K9me3_R1 , aes(x=hl, color="H3K9me3"), geom="line") +
+      xlim(50,350) + 
+      xlab(bquote("t"[1/2] ~ "(minutes)")) +
+      ylab("F(x)") +
+      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+            panel.background = element_blank(), axis.line = element_line(colour = "black"),
+            legend.key = element_rect(fill="white"), legend.title = element_blank()) +
+      scale_color_discrete(breaks=c("H3K9ac", "H3K4me1", "H3K36me3", "H3K9me3"))
+  )
+  dev.off()
 }

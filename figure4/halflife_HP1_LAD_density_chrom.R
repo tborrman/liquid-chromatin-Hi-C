@@ -35,4 +35,22 @@ for (chrom in c(paste("chr", 1:22, sep=""), "chrX")) {
                 legend.key = element_rect(fill="white"), legend.title = element_blank())
         )
   dev.off()
+  
+  
+  pdf(paste("chrom_HP1_LAD/", chrom, "_half-life_HP1_LAD_density_cumulative.pdf", sep=""),
+      width=7, height=5)
+  print(
+    ggplot() + 
+      stat_ecdf(data=upq_CBX1, aes(x=hl, color="CBX1"), geom="line") +
+      stat_ecdf(data=upq_CBX3, aes(x=hl, color="CBX3"), geom="line") +
+      stat_ecdf(data=upq_CBX5, aes(x=hl, color="CBX5"), geom="line") +
+      stat_ecdf(data=upq_LAD, aes(x=hl, color="LAD"), geom="line") +
+      xlim(50, 350) +
+      xlab(bquote("t"[1/2] ~ "(minutes)")) +
+      ylab("F(x)") +
+      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+            panel.background = element_blank(), axis.line = element_line(colour = "black"),
+            legend.key = element_rect(fill="white"), legend.title = element_blank())
+  )
+  dev.off()
 }
