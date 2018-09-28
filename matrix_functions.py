@@ -234,10 +234,57 @@ def get_cis_percent(h):
 			cp = (cis/total) * 100
 			cp_list.append(cp)
 	return cp_list
-		
-		
 
-		
+def get_resolution(h):
+	'''
+	Get resolution of Hi-C matrix
+
+	Args:
+		h: hdf file object
+	Returns:
+		r: resolution in bp
+	'''
+	bins = h['bin_positions'][:]
+	r = bins[0][2]
+	return r
+
+def get_cis_percent_range(h, r):
+	"""
+	Get cis percent for a given range per row
+
+	Args:
+		h: hdf file object
+		r: range length in bp of cis interactions upstream 
+			of each bin
+	Returns:
+		cp_list: list of cis percents for range per 
+			row across the genome
+	"""
+	cp_list = []
+	bin_positions = h['bin_positions'][:]
+	resolution =  get_resolution(h)
+	upstream_dist = r/resolution
+	obs = h['interactions'][:]
+	num_bins = len(obs)
+	for i, row in enumerate(obs):
+		# Check if row is all nan
+		if np.all(np.isnan(row)) or np.nansum(row) == 0:
+			cp_list.append(np.nan)
+		# Check if at end of genome
+		elif i + upstream_dist - 1 > num_bins -1:
+				cp_list.append(np.nan)
+		# Check if at end of chromosome (upstream range reaches trans) 
+		elif bin_positions[i,0] != bin_positions[i+upstream_dist -1,0]:
+				cp_list.append(np.nan)
+		else:
+			cis = np.nansum(row[i:i+upstream_dist])
+			total = np.nansum(row)
+			cp = (cis/total) * 100
+			cp_list.append(cp)
+
+	return cp_list
+
+
 
 
 
