@@ -6,10 +6,10 @@ import h5py
 import shutil
 import sys
 
-parser=argparse.ArgumentParser(description='Get cis percent for range upstream of bin of Hi-C hdf5 file' +
+parser=argparse.ArgumentParser(description='Get cis percent for window range of bin of Hi-C hdf5 file' +
 ' for each row of Hi-C matrix')
 parser.add_argument('-i', help='input hdf5 Hi-C file', type=str, required=True)
-parser.add_argument('-r', help='range', type=int, default=5000000)
+parser.add_argument('-r', help='window range', type=int, default=6000000)
 parser.add_argument('-m', help='create hdf5 with NAs in out of range loci', type=bool, default=False)
 args=parser.parse_args()
 
@@ -30,24 +30,35 @@ def main():
 
 			bin_positions = f['bin_positions'][:]
 			resolution =  mf.get_resolution(f)
-			upstream_dist = args.r/resolution
+			dist = (args.r/resolution)/2
 			num_bins = len(obs)
 			for i in range(num_bins):
 				# Check if row is all nan
 				if np.all(np.isnan(obs[i])) or np.nansum(obs[i]) == 0:
 					obs[i] = np.nan
-				# Check if at end of genome
-				elif i + upstream_dist - 1 > num_bins -1:
+				# Check if at start of genome
+				elif i - dist < 0:
 					obs[i] = np.nan
-				# Check if at end of chromosome (upstream range reaches trans) 
-				elif bin_positions[i,0] != bin_positions[i+upstream_dist -1,0]:
+				# Check if at end of genome
+				elif i + dist -1 > num_bins -1:
+					obs[i] = np.nan
+				# Check if at start of chromosome (upstream range reaches trans)
+				elif bin_positions[i,0] != bin_positions[i-dist,0]:
+					obs[i] = np.nan
+				# Check if at end of chromosome (downstream range reaches trans) 
+				elif bin_positions[i,0] != bin_positions[i+(dist-1),0]:
 					obs[i] = np.nan
 				else:
-					store = np.copy(obs[i, i:i+upstream_dist])
+					store = np.copy(obs[i, i-dist:i+dist])
+					print store
+					print len(store)
+					print dist
+					print i
+					print bin_positions[i]
+					print bin_positions[i-dist:i+dist, :]
 					obs[i] = np.nan
-					obs[i, i:i+upstream_dist] = store
-
-			del f['interactions']
+					obs[i, i-dist:i+dist] = store
+			del f['interactions']	
 			f.create_dataset("interactions",  data=obs, dtype='float64', 
 				compression='gzip', chunks=blocksize)
 			f.close()
@@ -55,7 +66,7 @@ def main():
 		else:
 			print 'ERROR: wrong file extension'
 			sys.exit()
-
+	quit()
 	# Get cis percent
 	f = h5py.File(args.i, 'r')
 	cp = mf.get_cis_percent_range(f, args.r) 
