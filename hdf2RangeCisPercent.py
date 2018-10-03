@@ -40,7 +40,7 @@ def main():
 				elif i - dist < 0:
 					obs[i] = np.nan
 				# Check if at end of genome
-				elif i + dist -1 > num_bins -1:
+				elif i + (dist -1) > num_bins -1:
 					obs[i] = np.nan
 				# Check if at start of chromosome (upstream range reaches trans)
 				elif bin_positions[i,0] != bin_positions[i-dist,0]:
@@ -50,14 +50,12 @@ def main():
 					obs[i] = np.nan
 				else:
 					store = np.copy(obs[i, i-dist:i+dist])
-					print store
-					print len(store)
-					print dist
-					print i
-					print bin_positions[i]
-					print bin_positions[i-dist:i+dist, :]
-					obs[i] = np.nan
-					obs[i, i-dist:i+dist] = store
+					# Check if any nans in range window
+					if np.any(np.isnan(store)):
+						obs[i] = np.nan
+					else:
+						obs[i] = np.nan
+						obs[i, i-dist:i+dist] = store
 			del f['interactions']	
 			f.create_dataset("interactions",  data=obs, dtype='float64', 
 				compression='gzip', chunks=blocksize)
@@ -66,12 +64,11 @@ def main():
 		else:
 			print 'ERROR: wrong file extension'
 			sys.exit()
-	quit()
 	# Get cis percent
 	f = h5py.File(args.i, 'r')
 	cp = mf.get_cis_percent_range(f, args.r) 
 	# Write output
-	OUT = open(args.i[:-5] + '_rangecispercent.bedGraph', 'w')
+	OUT = open(args.i[:-5] + '_range' + str(args.r/1000000) + 'Mb_cispercent.bedGraph', 'w')
 	# Only using 22 autosomes and X
 	y_chrom_bin_start =  f['chr_bin_range'][:][23][0]
 	for i, b in enumerate(f['bin_positions'][:][:y_chrom_bin_start]):

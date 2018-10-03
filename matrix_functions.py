@@ -254,8 +254,7 @@ def get_cis_percent_range(h, r):
 
 	Args:
 		h: hdf file object
-		r: range length in bp of cis interactions upstream 
-			of each bin
+		r: range length in bp for each bin
 	Returns:
 		cp_list: list of cis percents for range per 
 			row across the genome
@@ -263,25 +262,34 @@ def get_cis_percent_range(h, r):
 	cp_list = []
 	bin_positions = h['bin_positions'][:]
 	resolution =  get_resolution(h)
-	upstream_dist = r/resolution
+	dist = (r/resolution)/2
 	obs = h['interactions'][:]
 	num_bins = len(obs)
 	for i, row in enumerate(obs):
 		# Check if row is all nan
 		if np.all(np.isnan(row)) or np.nansum(row) == 0:
 			cp_list.append(np.nan)
+		# Check if at start of genome
+		elif i - dist < 0:
+			cp_list.append(np.nan)
 		# Check if at end of genome
-		elif i + upstream_dist - 1 > num_bins -1:
-				cp_list.append(np.nan)
-		# Check if at end of chromosome (upstream range reaches trans) 
-		elif bin_positions[i,0] != bin_positions[i+upstream_dist -1,0]:
+		elif i + (dist- 1) > num_bins -1:
+			cp_list.append(np.nan)
+		# Check if at start of chromosome (upstream range reaches trans)
+		elif bin_positions[i,0] != bin_positions[i-dist,0]:
+			cp_list.append(np.nan)
+		# Check if at end of chromosome (downstream range reaches trans) 
+		elif bin_positions[i,0] != bin_positions[i+(dist-1),0]:
 				cp_list.append(np.nan)
 		else:
-			cis = np.nansum(row[i:i+upstream_dist])
-			total = np.nansum(row)
-			cp = (cis/total) * 100
-			cp_list.append(cp)
-
+			# Check if any nans in range window
+			if np.any(np.isnan(row[i-dist:i+dist])):
+				cp_list.append(np.nan)
+			else:
+				cis = np.nansum(row[i-dist:i+dist])
+				total = np.nansum(row)
+				cp = (cis/total) * 100
+				cp_list.append(cp)
 	return cp_list
 
 
