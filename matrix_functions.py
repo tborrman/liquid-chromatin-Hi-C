@@ -248,13 +248,14 @@ def get_resolution(h):
 	r = bins[0][2]
 	return r
 
-def get_cis_percent_range(h, r):
+def get_cis_percent_range(h, r, p):
 	"""
 	Get cis percent for a given range per row
 
 	Args:
 		h: hdf file object
 		r: range length in bp for each bin
+		p: percent of NAs allowed (0.10)
 	Returns:
 		cp_list: list of cis percents for range per 
 			row across the genome
@@ -262,6 +263,7 @@ def get_cis_percent_range(h, r):
 	cp_list = []
 	bin_positions = h['bin_positions'][:]
 	resolution =  get_resolution(h)
+	max_NAs = (r/resolution) * p
 	dist = (r/resolution)/2
 	obs = h['interactions'][:]
 	num_bins = len(obs)
@@ -282,8 +284,8 @@ def get_cis_percent_range(h, r):
 		elif bin_positions[i,0] != bin_positions[i+(dist-1),0]:
 				cp_list.append(np.nan)
 		else:
-			# Check if any nans in range window
-			if np.any(np.isnan(row[i-dist:i+dist])):
+			# Check if too many NAs in range window
+			if np.sum(np.isnan(row[i-dist:i+dist])) > max_NAs:
 				cp_list.append(np.nan)
 			else:
 				cis = np.nansum(row[i-dist:i+dist])

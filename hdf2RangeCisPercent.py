@@ -11,10 +11,14 @@ parser=argparse.ArgumentParser(description='Get cis percent for window range of 
 parser.add_argument('-i', help='input hdf5 Hi-C file', type=str, required=True)
 parser.add_argument('-r', help='window range', type=int, default=6000000)
 parser.add_argument('-m', help='create hdf5 with NAs in out of range loci', type=bool, default=False)
+parser.add_argument('-n', help='maximum percent of NAs allowed in window', type=float, default=10.0)
 args=parser.parse_args()
 
 def main():
 	
+	# percent of NAs allowed
+	p = args.n/100
+
 	if args.m: 
 		# Get hdf file
 		f = h5py.File(args.i, 'r')
@@ -30,6 +34,7 @@ def main():
 
 			bin_positions = f['bin_positions'][:]
 			resolution =  mf.get_resolution(f)
+			max_NAs = (args.r/resolution) * p
 			dist = (args.r/resolution)/2
 			num_bins = len(obs)
 			for i in range(num_bins):
@@ -50,8 +55,8 @@ def main():
 					obs[i] = np.nan
 				else:
 					store = np.copy(obs[i, i-dist:i+dist])
-					# Check if any nans in range window
-					if np.any(np.isnan(store)):
+					# Check if too many NAs in range window
+					if np.sum(np.isnan(store)) > max_NAs:
 						obs[i] = np.nan
 					else:
 						obs[i] = np.nan
@@ -64,9 +69,10 @@ def main():
 		else:
 			print 'ERROR: wrong file extension'
 			sys.exit()
+
 	# Get cis percent
 	f = h5py.File(args.i, 'r')
-	cp = mf.get_cis_percent_range(f, args.r) 
+	cp = mf.get_cis_percent_range(f, args.r, p) 
 	# Write output
 	OUT = open(args.i[:-5] + '_range' + str(args.r/1000000) + 'Mb_cispercent.bedGraph', 'w')
 	# Only using 22 autosomes and X
