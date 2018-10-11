@@ -31,13 +31,14 @@ get_half_life <- function(LOS, minutes, LOS_half) {
   fitM <- try(nls(LOS ~ exp_decay(minutes, a, b, c), start = list(a=0.75, b=0.5, c=0.01), 
               trace=TRUE, control = nls.control(warnOnly = TRUE)))
   if(class(fitM) == "try-error") {
-    return(c(NA, NA))
+    return(c(NA, NA, NA))
   }
   else{
     params <- coef(fitM)
     ssr <- sum(as.numeric(residuals(fitM))^2)
     half_life <- half_life_equation(LOS_half, params["a"], params["b"], params["c"])
-    return(c(half_life, ssr))
+    tau <- 1/params["c"]
+    return(c(half_life, ssr, tau))
   }
 }
 
@@ -85,7 +86,7 @@ if (args$f) {
   
   png("chr1_49.96Mb_exponential.png", height=1800, width=2500, res=300)
   plot(minutes, LOS, pch=20, col = "darkgreen", xlab="Minutes of DpnII Digestion",
-       ylab= "Loss of Structure",main= "Chr1:49.96Mb-50Mb", ylim=c(-0.3,0.7))
+       ylab= "Range loss of structure (6Mb)",main= "Chr1:49.96Mb-50Mb", ylim=c(-0.3,0.7))
   lines(x,p, col="chartreuse4")
   h_linex <- seq(-50,half_life, 0.5)
   v_linex <- seq(-0.5, LOS_half, 0.001)
@@ -98,18 +99,22 @@ if (args$f) {
 # Create half-life vector and sum of squared residuals vector
 ssrs <- c()
 half_lives <- c()
+taus <- c()
 for (row in 1:nrow(df)) {
   if (sum(is.na(df[row,])) == 0) {
     LOS_half <- get_LOS_half(df[row,])
     hl_result <- get_half_life(as.numeric(df[row,4:9]), minutes, LOS_half)
     half_life <- hl_result[1]
     ssr <- hl_result[2]
+    tau <- hl_result[3]
     half_lives <- c(half_lives, half_life)
     ssrs <- c(ssrs, ssr)
+    taus <- c(taus, tau)
   }
   else {
     half_lives <- c(half_lives, NA)
     ssrs <- c(ssrs, NA)
+    taus <- c(taus, NA)
   }  
 }
 
@@ -117,11 +122,15 @@ cutoff <- get_outlier_cutoff(ssrs)
 
 ro <- remove_outliers(half_lives, ssrs, cutoff)
 
+tro <- remove_outliers(taus, ssrs, cutoff)
+
 
 dfHL <- cbind(df[,1:3], ro)
+dftaus <- cbind(df[,1:3], tro)
 
 # Write half-life to file
-write.table(dfHL, "half-life_exponential_40kb_removed_outliers.bed", col.names=FALSE, row.names=FALSE, sep="\t", quote=FALSE)
+write.table(dfHL, "half-life_exponential_40kb_removed_outliers_range6Mb.bedGraph", col.names=FALSE, row.names=FALSE, sep="\t", quote=FALSE)
+write.table(dftaus, "tau_exponential_40kb_removed_outliers_range6Mb.bedGraph", col.names=FALSE, row.names=FALSE, sep="\t", quote=FALSE)
 
 # Plot SSR histogram
 pdf("half-life_40kb_SSR_hist.pdf", width=10, height=5)
@@ -147,7 +156,7 @@ if (args$f) {
     chrom_hl <- dfHL$ro[dfHL$chrom == chrom]
     plot(chrom_mid, chrom_hl, type='l', col="chartreuse4", xlab= chrom,
          ylab=bquote("t"[1/2] ~ "(minutes)"), cex.lab = 2, ylim=c(0,300),
-         main= "Loss of Structure", cex.main=2)
+         main= "Range loss of structure (6Mb)", cex.main=2)
     dev.off()
     
     pdf(paste("plot_half_life_exponential_", chrom, "_removed_outliers.pdf",sep=""), width=22, height=5)
@@ -158,7 +167,7 @@ if (args$f) {
     chrom_hl <- dfHL$ro[dfHL$chrom == chrom]
     plot(chrom_mid, chrom_hl, type='l', col="chartreuse4", xlab= chrom,
          ylab=bquote("t"[1/2] ~ "(minutes)"), cex.lab = 2, ylim=c(0,300),
-         main= "Loss of Structure", cex.main=2)
+         main= "Range loss of structure (6Mb)", cex.main=2)
     dev.off()
   }
 }
