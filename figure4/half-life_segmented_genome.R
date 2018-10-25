@@ -3,7 +3,7 @@ library(RColorBrewer)
 
 
 
-df <- read.table("/cygwin64/home/Tyler/Research/digest/figure4/feature_matrix_v3_40kb.txt", sep="\t",
+df <- read.table("/cygwin64/home/Tyler/Research/digest/feature_analysis/C-40000/v4/feature_matrix_v4_40kb.txt", sep="\t",
                  header=TRUE, check.names=FALSE)
 
 z_score <- function(x) {
@@ -23,20 +23,15 @@ remove_outliers_std <- function(x) {
 # Hand picked features for figure 4
 features <- c("half-life_LOS", "H3K36me3_R1", "H3K27ac_R1", "H3K4me1_R1", "H4K20me1_R1",
               "H2AFZ_R1", "H3K9me1_R1", "H3K9me3_R1", "H3K9ac_R1", 
-              "H3K27me3_R1", "DNase-seq_R1", "DpnII-seq", "LAD_clone14",
-              "CBX1_R1", "CBX3_Myers", "CBX5", "SUZ12", 
-              "HDAC2_Snyder","G1_Repli-seq", "S1_Repli-seq", "S2_Repli-seq", 
-              "S3_Repli-seq","S4_Repli-seq", "G2_Repli-seq", "WGBS_R1", 
-              "NADs_IMR90", "RNA-seq_total_+_R1", "gene_density")
+              "H3K27me3_R1", "DNase-seq_R1", "LAD_K562",
+              "CBX1_R1", "CBX3_Myers", "CBX5", "SUZ12", "HDAC2_Snyder", 
+              "WGBS_R1", "NADs_IMR90", "gene_density", "SON_TSA-seq", "PML_R1")
 
 new_labels <- c("halflife_LOS", "H3K36me3", "H3K27ac", "H3K4me1", "H4K20me1",
                 "H2AFZ", "H3K9me1", "H3K9me3", "H3K9ac", 
-                "H3K27me3", "DNase-seq", "DpnII-seq", "LADs",
-                "CBX1", "CBX3", "CBX5", "SUZ12", 
-                "HDAC2","G1 Repli-seq", "S1 Repli-seq", "S2 Repli-seq", 
-                "S3 Repli-seq","S4 Repli-seq", "G2 Repli-seq", "WGBS", 
-                "NADs", "RNA-seq", "gene density")
-
+                "H3K27me3", "DNase-seq", "LADs",
+                "CBX1", "CBX3", "CBX5", "SUZ12", "HDAC2", 
+                "WGBS", "NADs", "gene density", "TSA-seq", "PML")
 
 
 dff <- df[features]
@@ -60,7 +55,7 @@ hl_heatmap <- data.frame()
 z_df <- data.frame(apply(df_no_out, 2, z_score), check.names=FALSE)
 
 
-segments <- seq(50,275,15)
+segments <- seq(40,120,5)
 
 for (i in 1:(length(segments)-1)) {
   seg_df <- data.frame(z_df[df_no_out$halflife_LOS >= segments[i] & df_no_out$halflife_LOS < segments[i+1],2:ncol(df_no_out)], check.names=FALSE)
@@ -72,22 +67,27 @@ for (i in 1:(length(segments)-1)) {
 colnames(hl_heatmap) <- colnames(order_df)
 
 t_hl_heatmap <- t(hl_heatmap)
-colnames(t_hl_heatmap) <- c("50-65",
-                            "65-80", "80-95", "95-110",
-                            "110-125", "125-140", "140-155", 
-                            "155-170", "170-185", "185-200", 
-                            "200-215", "215-230", "230-245", 
-                            "245-260", "260-275")
+colnames(t_hl_heatmap) <- c("40-45",
+                            "45-50", "50-55", "55-60",
+                            "60-65", "65-70", "70-75",
+                            "75-80", "80-85", "85-90",
+                            "90-95", "95-100", "100-105",
+                            "105-110", "110-115", "115-120")
 
-pdf("half-life_segmented_genome_mean.pdf", width=8, height=8, onefile=FALSE)
-pheatmap(t_hl_heatmap,color=rev(colorRampPalette(rev(brewer.pal(n = 7, name ="RdYlBu")))(100)), 
-         cluster_cols=FALSE, cluster_rows=FALSE)
+# SATURATION
+t_hl_heatmap[t_hl_heatmap > 1.5] = 1.5
+
+pdf("half-life_segmented_genome_mean_saturated.pdf", width=8, height=8, onefile=FALSE)
+pheatmap(t_hl_heatmap,color=colorRampPalette(rev(brewer.pal(n = 7, name ="RdYlBu")))(100), 
+         cluster_cols=FALSE, cluster_rows=FALSE
+         , breaks=seq(-1.25,1.5,2.75/100)
+)
 dev.off()
 
 # Histogram
 pdf(paste("half-life_hist_genome.pdf", sep=""), width=8, height=3)
-hist(df_no_out$halflife_LOS, breaks=seq(20, 500, 15), xlim=c(50, 275), xlab="",
-     main="", col="gray")
+hist(df_no_out$halflife_LOS, breaks=seq(5, 500, 5), xlim=c(40, 120), xlab="",
+     main="", col="gray", freq=FALSE)
 dev.off()
 
 
