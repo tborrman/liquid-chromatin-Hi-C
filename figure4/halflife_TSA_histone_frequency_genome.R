@@ -53,10 +53,11 @@ pdf(paste("B/half-life_TSA_histone_density_genome_B.pdf", sep=""),
         theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
               panel.background = element_blank(), axis.line = element_line(colour = "black"),
               legend.key = element_rect(fill="white"), legend.title = element_blank()) +
-        scale_color_manual(values=c("TSA-seq" = "#D73027",
-                                  "H3K9me1" = "#FC8D59",
-                                  #"H3K4me1" = "cyan",
-                                  "H3K27ac" = "hotpink"))
+        scale_color_manual(values=c("TSA-seq" = "red3",
+                                    "H3K9me1" = "pink2",
+                                    #"H3K4me1" = "cyan",
+                                    "H3K27ac" = "magenta"), 
+                           breaks=c("TSA-seq", "H3K9me1", "H3K27ac"))
       )
 dev.off()
 
@@ -73,10 +74,11 @@ print(
     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
           panel.background = element_blank(), axis.line = element_line(colour = "black"),
           legend.key = element_rect(fill="white"), legend.title = element_blank()) +
-    scale_color_manual(values=c("TSA-seq" = "#D73027",
-                                "H3K9me1" = "#FC8D59",
+    scale_color_manual(values=c("TSA-seq" = "red3",
+                                "H3K9me1" = "pink2",
                                 #"H3K4me1" = "cyan",
-                                "H3K27ac" = "hotpink"))
+                                "H3K27ac" = "magenta"), 
+                       breaks=c("TSA-seq", "H3K9me1", "H3K27ac"))
 )
 dev.off()
 
@@ -97,10 +99,11 @@ print(
     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
           panel.background = element_blank(), axis.line = element_line(colour = "black"),
           legend.key = element_rect(fill="white"), legend.title = element_blank()) +
-    scale_color_manual(values=c("TSA-seq" = "#D73027",
-                                "H3K9me1" = "#FC8D59",
+    scale_color_manual(values=c("TSA-seq" = "red3",
+                                "H3K9me1" = "pink2",
                                 #"H3K4me1" = "cyan",
-                                "H3K27ac" = "hotpink"))
+                                "H3K27ac" = "magenta"), 
+                       breaks=c("TSA-seq", "H3K9me1", "H3K27ac"))
 )
 dev.off()
       
@@ -117,10 +120,11 @@ print(
     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
           panel.background = element_blank(), axis.line = element_line(colour = "black"),
           legend.key = element_rect(fill="white"), legend.title = element_blank()) +
-    scale_color_manual(values=c("TSA-seq" = "#D73027",
-                                "H3K9me1" = "#FC8D59",
-                                #"H3K4me1" = "cyan",
-                                "H3K27ac" = "deeppink"))
+    scale_color_manual(values=c("TSA-seq" = "red3",
+                                "H3K9me1" = "pink2",
+                                #"H3K4me1" = "cyan
+                                "H3K27ac" = "magenta"), 
+                       breaks=c("TSA-seq", "H3K9me1", "H3K27ac"))
 )
 dev.off()
 
