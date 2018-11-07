@@ -13,7 +13,7 @@ def check_coordinates(l, f):
 def main():
 
 	features = [
-		('half-life/half-life_exponential_40kb_removed_outliers.bedGraph', 'half-life_LOS'),
+		('half-life/half-life_exponential_40kb_removed_outliers_range6Mb.bedGraph', 'half-life_LOS'),
 		('half-life_std/half-life_std_exponential_40kb.bed', 'half-life_std'),
 		('LOS/HBHiCK562DN10-5m-DPnII-R1__hg19__genome__C-40000-iced_scaleBy_0.39_LOS.bedGraph_noheader', 'LOS_5m'),
 		('LOS/HBHiCK562DN10-1h-DpnII-R1__hg19__genome__C-40000-iced_scaleBy_0.39_LOS.bedGraph_noheader', 'LOS_1h'),
@@ -46,14 +46,20 @@ def main():
 		('ChIP-seq/ENCFF453XIK_H3K79me2_R2_40kb.bedGraph', 'H3K79me2_R2'),
 		('ChIP-seq/ENCFF545UAE_CTCF_R1_40kb.bedGraph', 'CTCF_R1'),
 		('ChIP-seq/ENCFF061IVP_CTCF_R2_40kb.bedGraph', 'CTCF_R2'),
+		('ChIP-seq/ENCFF253VJL_SMC3_R1_40kb.bedGraph', 'SMC3_R1'),
+		('ChIP-seq/ENCFF003UFU_SMC3_R2_40kb.bedGraph', 'SMC3_R2'),
+		('ChIP-seq/ENCFF000YXZ_RAD21_40kb.bedGraph', 'RAD21'),
 		('DNase-seq/ENCFF111KJD_DNase_R1_40kb.bedGraph', 'DNase-seq_R1'),
 		('DNase-seq/ENCFF456JVK_DNase_R2_40kb.bedGraph', 'DNase-seq_R2'),
 		('DpnII-seq/HBCRACKHiC-K562-DN-TD-R1_GCCAAT_L008_copy_correct_coverage_40kb.bed', 'DpnII-seq'),
-		('lamina/Lamina_mean_OE_Clone.14.1N.OE_40kb.bedGraph', 'LAD_clone14'),
-		('lamina/Lamina_mean_OE_Clone.5-5.1N.OE_40kb.bedGraph', 'LAD_clone5-5'),
+		('lamina/KBM7/Lamina_mean_OE_Clone.14.1N.OE_40kb.bedGraph', 'LAD_KBM7_clone14'),
+		('lamina/KBM7/Lamina_mean_OE_Clone.5-5.1N.OE_40kb.bedGraph', 'LAD_KBM7_clone5-5'),
+		('lamina/K562/K562_LmnB1_DamID_log2ratios_hg19_40kb.bedGraph', 'LAD_K562'),
 		('loops/houda_control_DpnII_K562_anchor_list_40kb.bedGraph', 'loops'),
 		('loops/GSE63525_K562_HiCCUPS_anchor_list_40kb.bedGraph', 'loops_Rao'),
 		('eigen/eigen1_40kb.bedGraph', 'PCA_eigen1'),
+		('ChIP-seq/ENCFF985MBQ_CBX1_R1_40kb.bedGraph', 'CBX1_R1'),
+		('ChIP-seq/ENCFF824OMP_CBX1_R2_40kb.bedGraph', 'CBX1_R2'),
 		('ChIP-seq/remodellers/ENCFF358INE_CBX3_R1_40kb.bedGraph','CBX3_Bernstein'),
 		('ChIP-seq/remodellers/ENCFF630YDI_CBX3_R1_R2_40kb.bedGraph','CBX3_Myers'),		
 		('ChIP-seq/remodellers/ENCFF014XHT_CBX5_R1_R2_40kb.bedGraph', 'CBX5'),
@@ -86,10 +92,23 @@ def main():
 		('WGBS/ENCFF867JRG_WGBS_R1_liftOverhg19_40kb.bedGraph', 'WGBS_R1'),
 		('WGBS/ENCFF721JMB_WGBS_R2_liftOverhg19_40kb.bedGraph', 'WGBS_R2'),
 		('NADs/NADs_HeLa_2010_40kb.bedGraph', 'NADs_HeLA'),
-		('NADs/NADs_IMR90_2017_40kb.bedGraph', 'NADs_IMR90')
+		('NADs/NADs_IMR90_2017_40kb.bedGraph', 'NADs_IMR90'),
+		('RNA-seq/ENCFF039CTL_RNA-seq_polyA_plus_R1_40kb.bedGraph', 'RNA-seq_polyA_+_R1'),
+		('RNA-seq/ENCFF809GEF_RNA-seq_polyA_plus_R2_40kb.bedGraph', 'RNA-seq_polyA_+_R2'),
+		('RNA-seq/ENCFF960DJT_RNA-seq_polyA_minus_R1_40kb.bedGraph', 'RNA-seq_polyA_-_R1'),
+		('RNA-seq/ENCFF511CNS_RNA-seq_polyA_minus_R2_40kb.bedGraph', 'RNA-seq_polyA_-_R2'),
+		('RNA-seq/ENCFF717RYC_RNA-seq_total_plus_R1_40kb.bedGraph', 'RNA-seq_total_+_R1'),
+		('RNA-seq/ENCFF091RAW_RNA-seq_total_plus_R2_40kb.bedGraph', 'RNA-seq_total_+_R2'),
+		('RNA-seq/ENCFF633AHL_RNA-seq_total_minus_R1_40kb.bedGraph', 'RNA-seq_total_-_R1'),
+		('RNA-seq/ENCFF078XGZ_RNA-seq_total_minus_R2_40kb.bedGraph', 'RNA-seq_total_-_R2'),
+		('gene_density/gene_density_40kb.bedGraph', 'gene_density'),
+		('exons/exons_per_kb_40kb.bedGraph', 'exons_per_kb'),
+		('TSA-seq/GSE81553_SON_TSA-Seq_Condition2_40kb.bedGraph', 'SON_TSA-seq'),
+		('PML/ENCFF157IUB_PML_R1_40kb.bedGraph', 'PML_R1'),
+		('PML/ENCFF412XML_PML_R2_40kb.bedGraph', 'PML_R2')
 		]
 	IN = open('hg19_40kb.bed', 'r')
-	OUT = open('feature_matrix_v2_40kb.txt', 'w')
+	OUT = open('feature_matrix_v4_40kb.txt', 'w')
 	header = ['chrom', 'start', 'end']
 	for f in features:
 		header.append(f[1])
@@ -105,6 +124,8 @@ def main():
 					OUT.write(fline.split()[3] + '\t')		
 			else:
 				print 'ERROR in coordinates'
+				print line
+				print fline
 				print f
 				sys.exit()
 
