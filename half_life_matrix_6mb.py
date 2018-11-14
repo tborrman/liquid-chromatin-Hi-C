@@ -69,6 +69,22 @@ def half_life_equation(m, a, b, c):
 	hl = -(np.log((a-m)/b) / c)
 	return hl
 
+def exp_decay(minutes, a, b, c):
+	'''
+	Sigmoid function with adjustable parameters
+	
+	Args: 
+	 	minutes: minutes for timecourse
+	 	a,b,c: parameters for decay function
+	
+	Returns:
+	r = range of function
+	'''
+	r = a - (b*np.exp(-c*minutes))
+	return r
+
+
+
 
 def get_half_life(d, t, m):
 	'''
@@ -84,8 +100,17 @@ def get_half_life(d, t, m):
 		popt: list of fitted parameters
 	'''
 	# Curve fit
-	popt, pcov = curve_fit(exp_decay, t, d, p0= (0.75, 0.5, 0.01))
-	hl = half_life_equation(m, *popt)
+	print d
+	print t
+	print m
+	try:
+		popt, pcov = curve_fit(exp_decay, t, d, p0= (0.75, 0.5, 0.01))
+	except RuntimeError as error:
+		print error
+		hl = np.nan
+		popt = np.nan
+	else:
+		hl = half_life_equation(m, *popt)
 	return hl, popt
 	
 
@@ -101,20 +126,6 @@ def get_delta_intxns(n):
 	digest = n[1:]
 	delta = (mock - digest) / mock
 	return delta
-
-def exp_decay(minutes, a, b, c):
-	'''
-	Sigmoid function with adjustable parameters
-	
-	Args: 
-	 	minutes: minutes for timecourse
-	 	a,b,c: parameters for decay function
-	
-	Returns:
-	r = range of function
-	'''
-	r = a - (b*np.exp(-c*minutes))
-	return r
 
 def get_intxns_half(d):
 	'''
@@ -134,8 +145,8 @@ def main():
 
 	# Create copy of mock and use that to write over
 	# with half life data
-	#shutil.copy(args.i[0], 'half_life_chr14_6Mb.hdf5')
-	f = h5py.File('half_life_chr14_6Mb.hdf5', 'r+')
+	shutil.copy(args.i[0], 'half_life_chr22_6Mb.hdf5')
+	f = h5py.File('half_life_chr22_6Mb.hdf5', 'r+')
 
 	# List of timecourse file objects in order
 	f_obj_list = []
@@ -146,7 +157,7 @@ def main():
 	# in order
 	chr14_list = []
 	for o in f_obj_list:
-		chr14_list.append(mf.get_cis_matrix(o, 'chr14'))
+		chr14_list.append(mf.get_cis_matrix(o, 'chr22'))
 
 	if not check_shape(chr14_list):
 		print 'ERROR unequal dimensions for cis matrices'
@@ -154,29 +165,67 @@ def main():
 	
 	time = np.array([5, 60, 120, 180, 240, 960], dtype=float)
 	
-	# 1 MB distance
-	interactions = []
-	for h in chr14_list:
-		interactions.append(h[1250, 1275])
-	# delta interactions
-	delta_intxns = get_delta_intxns(interactions)
-	mid = get_intxns_half(delta_intxns)
-	hl, params = get_half_life(delta_intxns, time, mid)
-	x = np.linspace(-10, 1000, 100, dtype=float)
-	y = exp_decay(x, *params)
-	scatter_plot(delta_intxns, time, x, y, 'test_1MB_distance_delta.png', hl, mid)
+	# # 1 MB distance
+	# interactions = []
+	# for h in chr14_list:
+	# 	interactions.append(h[1250, 1275])
+	# # delta interactions
+	# delta_intxns = get_delta_intxns(interactions)
+	# mid = get_intxns_half(delta_intxns)
+	# hl, params = get_half_life(delta_intxns, time, mid)
+	# x = np.linspace(-10, 1000, 100, dtype=float)
+	# y = exp_decay(x, *params)
+	# scatter_plot(delta_intxns, time, x, y, 'test_1MB_distance_delta.png', hl, mid)
+	
 
-	# 400kb distance
-	interactions = []
-	for h in chr14_list:
-		interactions.append(h[1000, 1010])
-	# delta interactions
-	delta_intxns = get_delta_intxns(interactions)
-	mid = get_intxns_half(delta_intxns)
-	hl, params = get_half_life(delta_intxns, time, mid)
-	x = np.linspace(-10, 1000, 100, dtype=float)
-	y = exp_decay(x, *params)
-	scatter_plot(delta_intxns, time, x, y, 'test_400kb_distance_delta.png', hl, mid)
+	# # 400kb distance
+	# interactions = []
+	# for h in chr14_list:
+	# 	interactions.append(h[1000, 1010])
+	# # delta interactions
+	# delta_intxns = get_delta_intxns(interactions)
+	# mid = get_intxns_half(delta_intxns)
+	# hl, params = get_half_life(delta_intxns, time, mid)
+	# x = np.linspace(-10, 1000, 100, dtype=float)
+	# y = exp_decay(x, *params)
+	# scatter_plot(delta_intxns, time, x, y, 'test_400kb_distance_delta.png', hl, mid)
+
+	chrom = 'chr22'
+	dist = (6000000/40000)/2
+	#obs = f['interactions'][:]
+	bin_positions = f['bin_positions'][:]
+	num_bins = len(bin_positions)
+	chr_idx, = np.where(f['chrs'][:] == chrom)
+	chr_idx = chr_idx[0]
+	bins = f['chr_bin_range'][chr_idx]
+	for i in range(bins[0], bins[1] + 1):
+	#for i in range(55480, bins[1] + 1):
+		print 'on row: ' + str(i)
+		# 6Mb window
+		# Check if row is all nan
+		if np.all(np.isnan(f['interactions'][i])) or np.nansum(f['interactions'][i]) == 0:
+			f['interactions'][i] = np.nan
+		# Check if at start of chromosome (upstream range reaches trans)
+		elif bin_positions[i,0] != bin_positions[i-dist,0]:
+			f['interactions'][i] = np.nan
+		# Check if at end of chromosome (downstream range reaches trans) 
+		elif bin_positions[i,0] != bin_positions[i+(dist-1),0]:
+			f['interactions'][i] = np.nan
+		else:
+			for j in range(bins[0], bins[1] + 1):
+				interactions = []
+				for h in chr14_list:
+					interactions.append(h[i - bins[0], j - bins[0]])
+				if np.any(np.isnan(interactions)) or (interactions[0] == 0):
+					f['interactions'][i, j] = np.nan
+				else:
+					delta_intxns = get_delta_intxns(interactions)
+					mid = get_intxns_half(delta_intxns)
+					hl, params = get_half_life(delta_intxns, time, mid)
+					print hl
+					f['interactions'][i, j] = hl
+	print f['interactions'][:]
+	f.close()
 
 
 if __name__ == '__main__':
