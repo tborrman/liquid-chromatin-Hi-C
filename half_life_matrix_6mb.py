@@ -66,7 +66,10 @@ def half_life_equation(m, a, b, c):
 		hl: half-life
 
 	'''
-	hl = -(np.log((a-m)/b) / c)
+	if ((a-m)/b) <= 0 or c == 0:
+		hl = np.nan
+	else:
+		hl = -(np.log((a-m)/b) / c)
 	return hl
 
 def exp_decay(minutes, a, b, c):
@@ -100,9 +103,6 @@ def get_half_life(d, t, m):
 		popt: list of fitted parameters
 	'''
 	# Curve fit
-	print d
-	print t
-	print m
 	try:
 		popt, pcov = curve_fit(exp_decay, t, d, p0= (0.75, 0.5, 0.01))
 	except RuntimeError as error:
@@ -199,7 +199,7 @@ def main():
 	chr_idx = chr_idx[0]
 	bins = f['chr_bin_range'][chr_idx]
 	for i in range(bins[0], bins[1] + 1):
-	#for i in range(55480, bins[1] + 1):
+	#for i in range(bins[0] + 1250, bins[1] + 1):
 		print 'on row: ' + str(i)
 		# 6Mb window
 		# Check if row is all nan
@@ -213,18 +213,21 @@ def main():
 			f['interactions'][i] = np.nan
 		else:
 			for j in range(bins[0], bins[1] + 1):
-				interactions = []
-				for h in chr14_list:
-					interactions.append(h[i - bins[0], j - bins[0]])
-				if np.any(np.isnan(interactions)) or (interactions[0] == 0):
-					f['interactions'][i, j] = np.nan
+				# Check if in 6Mb window
+				if j >= i-dist and j < i+dist:
+					interactions = []
+					for h in chr14_list:
+						interactions.append(h[i - bins[0], j - bins[0]])
+					if np.any(np.isnan(interactions)) or (interactions[0] == 0):
+						f['interactions'][i, j] = np.nan
+					else:
+						delta_intxns = get_delta_intxns(interactions)
+						mid = get_intxns_half(delta_intxns)
+						hl, params = get_half_life(delta_intxns, time, mid)
+						f['interactions'][i, j] = hl
+						f['interactions'][j, i] = hl
 				else:
-					delta_intxns = get_delta_intxns(interactions)
-					mid = get_intxns_half(delta_intxns)
-					hl, params = get_half_life(delta_intxns, time, mid)
-					print hl
-					f['interactions'][i, j] = hl
-	print f['interactions'][:]
+					f['interactions'][i, j] = np.nan
 	f.close()
 
 
