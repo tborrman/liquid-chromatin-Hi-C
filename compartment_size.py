@@ -11,7 +11,7 @@ def get_bin_size(d):
 		line = d[0].strip().split('\t')
 		start = int(line[1])
 		end = int(line[2])
-		b = (end - start) + 1	
+		b = (end - start)
 		return b
 
 
@@ -28,10 +28,16 @@ def main():
 			switch = False
 			compartment_bins = 1
 			while not switch:
+				# Check if NA
+				if data[i + (compartment_bins - 1)].strip().split('\t')[3] == 'nan':				
+					break
 				# Break loop if on last compartment
 				if i+compartment_bins > len(data)-1:
 					break
 				nextline = data[i+compartment_bins].strip().split('\t')
+				# Break loop in next eigen is NA
+				if nextline[3] == 'nan':
+					break
 				nexteigen = float(nextline[3])
 				# Break loop if on new chromosome
 				nextchrom = nextline[0]
@@ -42,11 +48,16 @@ def main():
 					switch = True
 				else:
 					compartment_bins += 1
-			# Calc size in bp
+				
+			# Calculate size in bp
 			compartment_size = bin_size * compartment_bins
 			for j in range(compartment_bins):
-				printline = data[i+j].strip()
-				OUT.write(printline + '\t' + str(compartment_size) + '\n')
+				if data[i+j].strip().split('\t')[3] == 'nan':
+					printline = data[i+j].strip()
+					OUT.write(printline + '\tnan\n')
+				else:
+					printline = data[i+j].strip()
+					OUT.write(printline + '\t' + str(compartment_size) + '\n')
 
 			i = i+compartment_bins
 
