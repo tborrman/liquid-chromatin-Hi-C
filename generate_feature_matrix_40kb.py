@@ -52,6 +52,8 @@ def main():
 		('DNase-seq/ENCFF111KJD_DNase_R1_40kb.bedGraph', 'DNase-seq_R1'),
 		('DNase-seq/ENCFF456JVK_DNase_R2_40kb.bedGraph', 'DNase-seq_R2'),
 		('DpnII-seq/HBCRACKHiC-K562-DN-TD-R1_GCCAAT_L008_copy_correct_coverage_40kb.bed', 'DpnII-seq'),
+		('DpnII-sites/dpnII_sites_40kb.bedGraph', 'DpnII_sites'),
+		('DpnII-sites/hindIII_sites_40kb.bedGraph', 'HindIII_sites'),
 		('lamina/KBM7/Lamina_mean_OE_Clone.14.1N.OE_40kb.bedGraph', 'LAD_KBM7_clone14'),
 		('lamina/KBM7/Lamina_mean_OE_Clone.5-5.1N.OE_40kb.bedGraph', 'LAD_KBM7_clone5-5'),
 		('lamina/K562/K562_LmnB1_DamID_log2ratios_hg19_40kb.bedGraph', 'LAD_K562'),
