@@ -82,6 +82,9 @@ def main():
 		('ChIP-seq/remodellers/ENCFF518QUW_REST_R1_R2_40kb.bedGraph','REST'),
 		('ChIP-seq/remodellers/ENCFF734YKJ_KDM1A_R1_R2_40kb.bedGraph', 'KDM1A_Snyder1'),
 		('ChIP-seq/remodellers/ENCFF758MEL_KDM1A_R1_R2_40kb.bedGraph', 'KDM1A_Snyder2'),
+		('ChIP-seq/PolII/ENCFF749YKR_POLR2A_R1_40kb.bedGraph', 'POLR2A'),
+		('ChIP-seq/PolII/ENCFF452WGO_POLR2B_R1_40kb.bedGraph', 'POLR2B'),
+		('ChIP-seq/PolII/ENCFF015NSS_POLR2G_R1_40kb.bedGraph', 'POLR2G'),
 		('tad/Houda_Ctrl_DpnII_K562.40000_allchr.txt--is480000--nt0.1--ids320000--ss40000--immean.insulation.bpfix.bed', 'TAD_insulation'),
 		('Repli-Seq/ENCFF001GRX_G1_40kb.bedGraph', 'G1_Repli-seq'),
 		('Repli-Seq/ENCFF001GSF_S1_40kb.bedGraph', 'S1_Repli-seq'),
@@ -104,11 +107,14 @@ def main():
 		('gene_density/gene_density_40kb.bedGraph', 'gene_density'),
 		('exons/exons_per_kb_40kb.bedGraph', 'exons_per_kb'),
 		('TSA-seq/GSE81553_SON_TSA-Seq_Condition2_40kb.bedGraph', 'SON_TSA-seq'),
+		('TSA-seq/GSE81553_LaminAC_TSA-Seq_Condition2_40kb.bedGraph', 'LaminAC_TSA-seq'),
+		('TSA-seq/GSE81553_LaminB_TSA-Seq_Condition2_40kb.bedGraph', 'LaminB_TSA-seq'),
+		('TSA-seq/GSE81553_Pol2_TSA-Seq_Condition1_40kb.bedGraph', 'Pol2_TSA-seq'),
 		('PML/ENCFF157IUB_PML_R1_40kb.bedGraph', 'PML_R1'),
 		('PML/ENCFF412XML_PML_R2_40kb.bedGraph', 'PML_R2')
 		]
 	IN = open('hg19_40kb.bed', 'r')
-	OUT = open('feature_matrix_v4_40kb.txt', 'w')
+	OUT = open('feature_matrix_v5_40kb.txt', 'w')
 	header = ['chrom', 'start', 'end']
 	for f in features:
 		header.append(f[1])

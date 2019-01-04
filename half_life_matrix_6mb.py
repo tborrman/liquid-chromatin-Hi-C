@@ -145,8 +145,8 @@ def main():
 
 	# Create copy of mock and use that to write over
 	# with half life data
-	shutil.copy(args.i[0], 'half_life_chr22_6Mb.hdf5')
-	f = h5py.File('half_life_chr22_6Mb.hdf5', 'r+')
+	shutil.copy(args.i[0], 'half_life_chr14_6Mb.hdf5')
+	f = h5py.File('half_life_chr14_6Mb.hdf5', 'r+')
 
 	# List of timecourse file objects in order
 	f_obj_list = []
@@ -157,7 +157,7 @@ def main():
 	# in order
 	chr14_list = []
 	for o in f_obj_list:
-		chr14_list.append(mf.get_cis_matrix(o, 'chr22'))
+		chr14_list.append(mf.get_cis_matrix(o, 'chr14'))
 
 	if not check_shape(chr14_list):
 		print 'ERROR unequal dimensions for cis matrices'
@@ -168,7 +168,7 @@ def main():
 	# # 1 MB distance
 	# interactions = []
 	# for h in chr14_list:
-	# 	interactions.append(h[1250, 1275])
+	# 	interactions.append(h[500, 510])
 	# # delta interactions
 	# delta_intxns = get_delta_intxns(interactions)
 	# mid = get_intxns_half(delta_intxns)
@@ -181,7 +181,7 @@ def main():
 	# # 400kb distance
 	# interactions = []
 	# for h in chr14_list:
-	# 	interactions.append(h[1000, 1010])
+	# 	interactions.append(h[500,  504])
 	# # delta interactions
 	# delta_intxns = get_delta_intxns(interactions)
 	# mid = get_intxns_half(delta_intxns)
@@ -189,9 +189,10 @@ def main():
 	# x = np.linspace(-10, 1000, 100, dtype=float)
 	# y = exp_decay(x, *params)
 	# scatter_plot(delta_intxns, time, x, y, 'test_400kb_distance_delta.png', hl, mid)
-
-	chrom = 'chr22'
-	dist = (6000000/40000)/2
+	
+	chrom = 'chr14'
+	binSize = f['bin_positions'][0,2]
+	dist = (6000000/binSize)/2
 	#obs = f['interactions'][:]
 	bin_positions = f['bin_positions'][:]
 	num_bins = len(bin_positions)
@@ -233,3 +234,4 @@ def main():
 
 if __name__ == '__main__':
 	main()
+	
