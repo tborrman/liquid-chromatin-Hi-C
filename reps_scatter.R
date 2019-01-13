@@ -26,8 +26,8 @@ par(mar=c(6, 5, 4, 2) + 0.1)
 smoothScatter(logx, logy,
               xlab="Replicate 1 log2 interactions", ylab="Replicate 2 log2 interactions", 
               col='white', cex=1.25, main=args$t, cex.axis=1.5, cex.lab=1.5, cex.main=1.5,
-              colramp=colorRampPalette(rev(brewer.pal(11,'Spectral'))))
-text(4,15, 
+              colramp=colorRampPalette(rev(brewer.pal(11,'Spectral'))), xlim=c(0,17), ylim=c(0,17))
+text(4,13, 
 	sprintf("r = %.3f", round(cor(x, y, method="pearson", use="complete.obs"),3)), 
 		col="white", cex=2)
 dev.off()
