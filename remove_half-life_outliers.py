@@ -18,7 +18,7 @@ def check_coordinates(i, j):
 
 def main():
 
-	HL = open('/home/Tyler/Research/digest/cis_percent/timecourse/C-40000/half-life_LOS/half-life_exponential_40kb_removed_outliers.bed', 'r')
+	HL = open('/home/Tyler/Research/digest/LOS_6MB/C-40000/rangehalf-life_LOS/half-life_exponential_40kb_removed_outliers_range6Mb.bedGraph', 'r')
 	halflifes = HL.readlines()
 	IN = open(args.i, 'r')
 	OUT = open(args.i[:-9] + '_removed_outliers.bedGraph', 'w')
