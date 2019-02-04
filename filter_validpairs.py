@@ -41,7 +41,6 @@ def filter_valid_pairs(NOFILTER, FILTERED, d):
 			# Check valid distance
 			if abs(int(splitline[2]) - int(splitline[8])) < d:
 				counter += 1
-				print line
 			else:
 				FILTERED.write(line)
 		else:
