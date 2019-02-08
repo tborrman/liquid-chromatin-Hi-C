@@ -3,12 +3,12 @@ source("C:/cygwin64/home/Tyler/Research/digest/digest-Hi-C/my_functions.R")
 
 options(scipen=100)
 #Get data
-min5 <- read.table("HBHiCK562DN10-5m-DPnII-R1__hg19__genome__C-500000-iced_scaleBy_56.28_LOS.bedGraph", sep="\t", header=TRUE)
-hour1 <- read.table("HBHiCK562DN10-1h-DpnII-R1__hg19__genome__C-500000-iced_scaleBy_58.39_LOS.bedGraph", sep="\t", header=TRUE)
-hour2 <- read.table("HBHiCK562DN10-2h-DpnII-R1__hg19__genome__C-500000-iced_scaleBy_58.76_LOS.bedGraph", sep="\t", header=TRUE)
-hour3 <- read.table("HBHiCK562DN10-3h-DpnII-R1__hg19__genome__C-500000-iced_scaleBy_59.28_LOS.bedGraph", sep="\t", header=TRUE)
-hour4 <- read.table("HBHiCK562DN10-4h-DpnII-R1__hg19__genome__C-500000-iced_scaleBy_59.21_LOS.bedGraph", sep="\t", header=TRUE)
-ON <- read.table("HBHiCK562DN10-ON-DpnII-R1__hg19__genome__C-500000-iced_scaleBy_59.8_LOS.bedGraph", sep="\t", header=TRUE)
+min5 <- read.table("HBHiCK562DN10-5m-DPnII-R1__hg19__genome__C-40000-iced_scaleBy_0.39_LOS.bedGraph", sep="\t", header=TRUE)
+hour1 <- read.table("HBHiCK562DN10-1h-DpnII-R1__hg19__genome__C-40000-iced_scaleBy_0.39_LOS.bedGraph", sep="\t", header=TRUE)
+hour2 <- read.table("HBHiCK562DN10-2h-DpnII-R1__hg19__genome__C-40000-iced_scaleBy_0.39_LOS.bedGraph", sep="\t", header=TRUE)
+hour3 <- read.table("HBHiCK562DN10-3h-DpnII-R1__hg19__genome__C-40000-iced_scaleBy_0.39_LOS.bedGraph", sep="\t", header=TRUE)
+hour4 <- read.table("HBHiCK562DN10-4h-DpnII-R1__hg19__genome__C-40000-iced_scaleBy_0.39_LOS.bedGraph", sep="\t", header=TRUE)
+ON <- read.table("HBHiCK562DN10-ON-DpnII-R1__hg19__genome__C-40000-iced_scaleBy_0.39_LOS.bedGraph", sep="\t", header=TRUE)
 
 # merging data
 colnames(min5)[4] <- "min5_LOS"
@@ -31,13 +31,13 @@ m <- OrderChromStart(m)
 minutes <- c(5, 60, 120, 180, 240, 960)
 
 # Example half-life
-png("plot_LOS/chr1_49.5Mb_hl.png", height=1800, width=2500, res=300)
-  plot(minutes, m[100, 4:9], xlab = "Minutes of DpnII Digestion", 
+png("plot_LOS/chr1_49.96Mb_hl.png", height=1800, width=2500, res=300)
+  plot(minutes, m[1250, 4:9], xlab = "Minutes of DpnII Digestion", 
        ylab= "Loss of Structure", type='o', pch=20, col="chartreuse4",
-       main="Chr1:49.5Mb-50Mb",ylim=c(-0.3,0.9))
+       main="Chr1:49.96Mb-50Mb",ylim=c(-0.3,0.9))
 dev.off()
 
-# Genome wide at 500kb
+# Genome wide at 40kb
 b <- boxplot(m[4:9])
 png("plot_LOS/genome_LOS.png", height=1800, width=2500, res=300)
 boxplot(m[4:9], ylim=c(-0.3,0.9), at=minutes, boxwex=50, names=minutes, 
@@ -47,10 +47,10 @@ lines(minutes, b$stats[3,], col="black")
 dev.off()
 
 # Write LOS data to table
-write.table(m, "LOS_500kb.txt", sep="\t", col.names=TRUE, row.names=FALSE, quote=FALSE)
+write.table(m, "LOS_40kb.txt", sep="\t", col.names=TRUE, row.names=FALSE, quote=FALSE)
 
 # Compartments ####################################################################################
-eigenPath <- "C:/cygwin64/home/Tyler/Research/digest/cis_percent/compartment/HBHiC-K562-MN-Dp-1__hg19__genome__C-500000-raw_scaleBy_2.72.balanced_scaleBy_51.45__all.zScore.eigen1.sorted.bedGraph"
+eigenPath <- "C:/Users/tyler/Dropbox (UMass Medical School)/digest_092718/eigen/eigen1_40kb.bedGraph"
 eigen_table <- read.table(eigenPath, sep="\t")
 
 # Fix bp indexing
@@ -68,11 +68,11 @@ B <- me[me$eigen <= 0,]
 A <- A[rowSums(is.na(A)) != ncol(A),]
 B <- B[rowSums(is.na(B)) != ncol(B),]
 
-# Compartments at 500kb
+# Compartments at 40kb
 b <- boxplot(A[4:9])
 A_med <- b$stats[3,]
 png("plot_LOS/A_compartment_LOS.png", height=1800, width=2500, res=300)
-boxplot(A[4:9], ylim=c(-0.3,0.9), at=minutes, boxwex=50, names=minutes, 
+boxplot(A[4:9], ylim=c(-0.3,0.9), at=minutes, boxwex=50, names=minutes,
         xlab="Minutes of DpnII Digestion", outline=FALSE,
         ylab= "Loss of Structure", main= "A compartment", col="red")
 lines(minutes, A_med, col="black")
@@ -81,7 +81,7 @@ dev.off()
 b <- boxplot(B[4:9])
 B_med <- b$stats[3,]
 png("plot_LOS/B_compartment_LOS.png", height=1800, width=2500, res=300)
-boxplot(B[4:9], ylim=c(-0.3,0.9), at=minutes, boxwex=50, names=minutes, 
+boxplot(B[4:9], ylim=c(-0.3,0.9), at=minutes, boxwex=50, names=minutes,
         xlab="Minutes of DpnII Digestion", outline=FALSE,
         ylab= "Loss of Structure", main= "B compartment", col="blue")
 lines(minutes, B_med, col="black")
@@ -89,7 +89,7 @@ dev.off()
 
 # Overplot
 png("plot_LOS/A_B_compartment_LOS.png", height=1800, width=2500, res=300)
-boxplot(A[4:9], ylim=c(-0.3,0.9), at=minutes, boxwex=50, names=minutes, 
+boxplot(A[4:9], ylim=c(-0.3,0.9), at=minutes, boxwex=50, names=minutes,
         xlab="Minutes of DpnII Digestion", outline=FALSE,
         ylab= "Loss of Structure", main= "A and B compartments", col="red")
 lines(minutes, A_med, col="red")
@@ -98,7 +98,7 @@ boxplot(B[4:9], at=minutes, boxwex=50,
         col="blue", add=TRUE, outline=FALSE, names=FALSE)
 lines(minutes, B_med, col="blue")
 dev.off()
-
+# 
 
 
 
