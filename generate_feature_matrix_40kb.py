@@ -13,14 +13,7 @@ def check_coordinates(l, f):
 def main():
 
 	features = [
-		('half-life/half-life_exponential_40kb_removed_outliers_range6Mb.bedGraph', 'half-life_LOS'),
-		('half-life_std/half-life_std_exponential_40kb.bed', 'half-life_std'),
-		('LOS/HBHiCK562DN10-5m-DPnII-R1__hg19__genome__C-40000-iced_scaleBy_0.39_LOS.bedGraph_noheader', 'LOS_5m'),
-		('LOS/HBHiCK562DN10-1h-DpnII-R1__hg19__genome__C-40000-iced_scaleBy_0.39_LOS.bedGraph_noheader', 'LOS_1h'),
-		('LOS/HBHiCK562DN10-2h-DpnII-R1__hg19__genome__C-40000-iced_scaleBy_0.39_LOS.bedGraph_noheader', 'LOS_2h'),
-		('LOS/HBHiCK562DN10-3h-DpnII-R1__hg19__genome__C-40000-iced_scaleBy_0.39_LOS.bedGraph_noheader', 'LOS_3h'),
-		('LOS/HBHiCK562DN10-4h-DpnII-R1__hg19__genome__C-40000-iced_scaleBy_0.39_LOS.bedGraph_noheader', 'LOS_4h'),
-		('LOS/HBHiCK562DN10-ON-DpnII-R1__hg19__genome__C-40000-iced_scaleBy_0.39_LOS.bedGraph_noheader', 'LOS_ON'),
+		('half-life/half-life_exponential_40kb_removed_outliers_range6Mb_filter1000_timecourse1.bedGraph', 'half-life_LOS'),
 		('ChIP-seq/ENCFF223BKS_H3K36me3_R1_40kb.bedGraph', 'H3K36me3_R1'),
 		('ChIP-seq/ENCFF013QMA_H3K36me3_R2_40kb.bedGraph', 'H3K36me3_R2'),
 		('ChIP-seq/ENCFF006RIO_H3K27ac_R1_40kb.bedGraph', 'H3K27ac_R1'),
@@ -109,6 +102,7 @@ def main():
 		('gene_density/gene_density_40kb.bedGraph', 'gene_density'),
 		('exons/exons_per_kb_40kb.bedGraph', 'exons_per_kb'),
 		('TSA-seq/GSE81553_SON_TSA-Seq_Condition2_40kb.bedGraph', 'SON_TSA-seq'),
+		('TSA-seq/GSE81553_pSC35_TSA-Seq_Condition1_40kb.bedGraph', 'pSC35_TSA-seq'),
 		('TSA-seq/GSE81553_LaminAC_TSA-Seq_Condition2_40kb.bedGraph', 'LaminAC_TSA-seq'),
 		('TSA-seq/GSE81553_LaminB_TSA-Seq_Condition2_40kb.bedGraph', 'LaminB_TSA-seq'),
 		('TSA-seq/GSE81553_Pol2_TSA-Seq_Condition1_40kb.bedGraph', 'Pol2_TSA-seq'),
@@ -116,7 +110,7 @@ def main():
 		('PML/ENCFF412XML_PML_R2_40kb.bedGraph', 'PML_R2')
 		]
 	IN = open('hg19_40kb.bed', 'r')
-	OUT = open('feature_matrix_v5_40kb.txt', 'w')
+	OUT = open('feature_matrix_v6_40kb.txt', 'w')
 	header = ['chrom', 'start', 'end']
 	for f in features:
 		header.append(f[1])
