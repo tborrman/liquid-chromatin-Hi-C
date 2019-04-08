@@ -121,6 +121,9 @@ def dedup(f):
 	numRedundantMolecules = moleculeCount - interactionCount
 	totalRedundantMolecules += numRedundantMolecules
 
+	IN.close()
+	OUT.close()
+	
 	return(validPairCount, interactionTotal, moleculeTotal, totalRedundantMolecules)
 
 def main():
