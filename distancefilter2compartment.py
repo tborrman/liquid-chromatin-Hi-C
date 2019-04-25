@@ -89,6 +89,9 @@ def split_by_compartment(f, t, a, b, ed, q):
 			print 'On row: ' + str(i)
 		splitline = line.strip().split('\t')
 		chrom = splitline[1]
+		validchroms = ['chr' + x for x in map(str, range(1,23))] + ['chrX']
+		if chrom not in validchroms:
+			continue
 		p1 = int(splitline[2])
 		p2 = int(splitline[8])
 		# Check which compartment reads belong to and 
