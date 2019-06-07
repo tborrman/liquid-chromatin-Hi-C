@@ -14,7 +14,7 @@ args = parser.parse_args()
 def main():
 	# Get matrix of interactions
 	m = mf.hdf5_2_numpy_matrix(args.i)
-	rowSums = np.sum(m, 1)
+	rowSums = np.nansum(m, 1)
 	f = h5py.File(args.i, 'r') 
 	# Write output
 	OUT = open(args.i[:-5] + '_rowSum.bedGraph', 'w')
