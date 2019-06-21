@@ -31,18 +31,9 @@ def check_bins_match(s, c):
 def correct_reads(r, c):
 	if c == 'NA':
 		correct = 'NA'
-	elif c == '2':
-		correct = round(int(r)/1.0, 2)
-	elif c == '3':
-		correct = round(int(r)/1.5, 2)
-	elif c == '4':
-		correct = round(int(r)/2.0, 2)
 	else:
-		print 'ERROR: unknown copy number'
-		sys.exit()
+		correct = round(int(r) / ((int(c) / 2.0)))
 	return correct
-
-	
 
 def main():
 	# Check files have the same number of bins
