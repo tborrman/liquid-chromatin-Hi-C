@@ -4,6 +4,8 @@ library(RColorBrewer)
 
 DpnII_df <- read.table("C:/Users/tyler/Dropbox (UMass Medical School)/digest_092718/DpnII-seq/timecourse/copy_correct_coverage/40kb/HBDpSeqK562-DN5mR1_S1_L001_copy_correct_coverage_40kb.bed",
                        sep="\t", header=FALSE, col.names=c("chrom", "start", "end", "min5"))
+thalf <- read.table("C:/Users/tyler/Dropbox (UMass Medical School)/digest_092718/filter1000/timecourse1/half-life/half-life_exponential_40kb_removed_outliers_range6Mb_filter1000_timecourse1.bedGraph",
+                       sep="\t", header=FALSE, col.names=c("chrom", "start", "end", "hl"))
 
 graycol <-  colorRampPalette(brewer.pal(n = 9, name ="Greys")[3:9])(11)
 
@@ -46,6 +48,7 @@ for (i in 1:11) {
    if (i > 1) {
      DpnII_df <- cbind(DpnII_df, d[f[[i]][2]])
    }
+  print(cor(thalf$hl, d[[4]], method="spearman", use="complete.obs"))
 }
 dev.off()
 

@@ -88,9 +88,16 @@ for (i in 1:11) {
     axis(2, lwd=2, cex.axis=1)
     box(bty="l", lwd=2)
   }
-
-  print(cor(thalf_chr2["hl"], d_chr2["DpnIIseq"], method="spearman", use="complete.obs"))
-  print(cor(clean_df["PC1"], hl_resid,  method="spearman", use="complete.obs"))
+  # print(cor(thalf_chr2["hl"], d_chr2["DpnIIseq"], method="spearman", use="complete.obs"))
+  # print(cor(clean_df["PC1"], hl_resid,  method="spearman", use="complete.obs"))
+  
+  
+  # Correlation genome wide
+  df <- cbind(thalf, d["DpnIIseq"], eigen["PC1"])
+  clean_df <- na.omit(df)
+  hl_resid <- get_residuals(clean_df$hl, clean_df$DpnIIseq)
+  PC1_resid <- get_residuals(clean_df$PC1, clean_df$DpnIIseq)
+  print(cor(hl_resid, PC1_resid, method="spearman", use="complete.obs"))
 }
 
 dev.off()
