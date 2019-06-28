@@ -5,6 +5,8 @@ library(RColorBrewer)
 DpnII_df <- read.table("C:/Users/tyler/Dropbox (UMass Medical School)/digest_092718/DpnII-seq/timecourse/copy_correct_coverage/40kb/HBDpSeqK562-DN5mR1_S1_L001_copy_correct_coverage_40kb.bed",
                        sep="\t", header=FALSE, col.names=c("chrom", "start", "end", "min5"))
 
+graycol <-  colorRampPalette(brewer.pal(n = 9, name ="Greys")[3:9])(11)
+
 pdf("fig4DpnIIseqSupp.pdf", height = 7, width = 6)
 par(mfrow=c(11,1), mar=c(2, 4, 0, 2) + 0.1)
 f <- list(c("HBDpSeqK562-DN5mR1_S1_L001_copy_correct_coverage_40kb.bed", "min5"),
@@ -22,12 +24,24 @@ for (i in 1:11) {
   d <- read.table(paste("C:/Users/tyler/Dropbox (UMass Medical School)/digest_092718/DpnII-seq/timecourse/copy_correct_coverage/40kb/",f[[i]][1], sep=""),
                   sep="\t", header=FALSE, col.names=c("chrom", "start", "end", f[[i]][2]))
   d_chr2 <- d[d$chrom == "chr2",]
-   plot(d_chr2$start/1000000, d_chr2$DpnIIseq, type="l", col="cyan2", 
-       xlab = "", ylab = paste(f[[i]][2], sep=" "), axes=FALSE, lwd=0.5,
-       ylim=c(0,3000))
-   axis(1, lwd=2, cex.axis=1, labels=FALSE) 
-   axis(2, lwd=2, cex.axis=1)
-   box(bty="l", lwd=2)
+  
+  if (i == 11) {
+    plot(d_chr2$start/1000000, d_chr2[[4]], type="l", col=graycol[i], 
+     xlab = "", ylab = paste(f[[i]][2], sep=" "), axes=FALSE, lwd=0.5,
+     ylim=c(0,2500))
+    axis(1, lwd=2, cex.axis=1) 
+    axis(2, lwd=2, cex.axis=1)
+    box(bty="l", lwd=2)
+  }
+  else {
+    plot(d_chr2$start/1000000, d_chr2[[4]], type="l", col=graycol[i], 
+         xlab = "", ylab = paste(f[[i]][2], sep=" "), axes=FALSE, lwd=0.5,
+         ylim=c(0,2500))
+    axis(1, lwd=2, cex.axis=1, labels=FALSE) 
+    axis(2, lwd=2, cex.axis=1)
+    box(bty="l", lwd=2)
+    
+  }
    
    if (i > 1) {
      DpnII_df <- cbind(DpnII_df, d[f[[i]][2]])
