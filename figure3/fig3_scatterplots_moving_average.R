@@ -13,19 +13,14 @@ LOS_DpnII_chr2 <- LOS_DpnII[LOS_DpnII$chrom == "chr2",]
 LOS_HindIII_chr2 <- LOS_HindIII[LOS_HindIII$chrom == "chr2",]
 DpnIIseq_chr2 <- DpnIIseq[DpnIIseq$chrom == "chr2",]
 
-get_residuals <- function(x, p) {
-  Y <- as.numeric(as.character(x))
-  X <- as.numeric(as.character(p))
-  m <- lm(Y~X)
-  r <- m$residuals
-  return(r)
-}
 
-get_moving_average <- function(x, y, n) {
+get_moving_average <- function(x, y, n, s, dec) {
   ## Args:
   #  x: unordered numeric vector to slide windows across
   #  y: unordered numeric values to mean over x window
   #  n: window size
+  #  s: step size
+  #  dec: number of decimal places to round for merge
   # Returns:
   # df: dataframe with columns:
   #   w: window centers
@@ -36,9 +31,9 @@ get_moving_average <- function(x, y, n) {
   if (length(x)!=length(y)) {
     stop("Unequal vector lengths")
   }
-  xmin <- round(min(x, na.rm=TRUE))
-  xmax <- round(max(x, na.rm=TRUE))
-  w <- seq(xmin, xmax)
+  xmin <- round(min(x, na.rm=TRUE), dec)
+  xmax <- round(max(x, na.rm=TRUE), dec)
+  w <- seq(xmin, xmax, by=s)
   mu <- c()
   for (i in w) {
     m <- mean(y[x > (i-(n/2)) & x < (i + (n/2))])
@@ -48,7 +43,7 @@ get_moving_average <- function(x, y, n) {
   return(df)
 }
 
-get_ma_residuals <- function(o, df) {
+get_ma_residuals <- function(o, df, dec) {
   # Get moving average residuals
   ## Args:
   #  o: original dataframe with cols:
@@ -59,16 +54,15 @@ get_ma_residuals <- function(o, df) {
   #   column5:  numeric vector original y-axis
   #  df: dataframe output by get_moving_average
   #      function
+  #  dec: number of decimal places to round for merge
   # Returns:
   #  r: dataframe of residuals and locations
   colnames(o) <- c("chrom", "start", "end", "w", "y")
-  o["w"] <- round(o["w"])
-  print(head(o))
+  o["w"] <- round(o["w"], dec)
+  df["w"] <- round(df["w"], dec)
   m <- merge(o, df, by="w")
-  print(head(m))
   m_resid <- m$y-m$mu
   r <- cbind(m[c("chrom", "start", "end")], m_resid)
-  print(head(r))
   return(r)
 }
 
@@ -82,42 +76,39 @@ d$LOS_h[which(is.na(d), arr.ind = TRUE)[,1]] <- NA
 d$signal[which(is.na(d), arr.ind = TRUE)[,1]] <- NA
 d_clean <- na.omit(d)
 
-
-
-pdf("scatterplot_get_moving_average.pdf", height=9, width=5)
+pdf("fig3_scatterplots_moving_average.pdf", height=9, width=5)
 par(mfrow=c(3,2), mar=c(5, 4, 0, 2) + 0.1)
 
-
-LOShPC1m <- lm(d_clean$LOS_h~d_clean$PC1)
 plot(d$PC1, d$LOS_h, col=ifelse(d$PC1 > 0, "red", "blue"),
      pch=20, xlab="PC1", ylab="LOS HindIII (%)", cex=0.5, cex.lab=1.5)
 rho <- sprintf("%.2f",round(cor(d$PC1, d$LOS_h, method="spearman", use="complete.obs"), 3))
 text(0.01, -0.10, bquote(rho == .(rho) ), cex=2)
-abline(LOShPC1m$coefficients[1], LOShPC1m$coefficients[2], col="grey60", lwd = 1.5)
 
-LOSdPC1m <- lm(d_clean$LOS_d~d_clean$PC1)
 plot(d$PC1, d$LOS_d, col=ifelse(d$PC1 > 0, "red", "blue"),
      pch=20, xlab="PC1", ylab="LOS DpnII (%)", cex=0.5, cex.lab=1.5)
 rho <- sprintf("%.2f",round(cor(d$PC1, d$LOS_d, method="spearman", use="complete.obs"), 3))
 text(0.01, 0.78, bquote(rho == .(rho) ), cex=2)
-abline(LOSdPC1m$coefficients[1], LOSdPC1m$coefficients[2], col="grey60", lwd=1.5)
 
-ma <- get_moving_average(d_clean$signal, d_clean$LOS_d, 100)
-los_r <- get_ma_residuals(d_clean[c("chrom", "start", "end", "signal", "LOS_d")], ma)
-
+ma <- get_moving_average(d_clean$signal, d_clean$LOS_d, 200, 1, 0)
+los_r <- get_ma_residuals(d_clean[c("chrom", "start", "end", "signal", "LOS_d")], ma, 0)
 plot(d$signal, d$LOS_d, col=ifelse(d$PC1 > 0, "red", "blue"),
      pch=20, xlab="DpnII-seq signal", ylab="LOS DpnII (%)", cex=0.5, cex.lab=1.5)
 rho <- sprintf("%.2f",round(cor(d$signal, d$LOS_d, method="spearman", use="complete.obs"), 3))
 text(1700, 0.78, bquote(rho == .(rho) ), cex=2)
 lines(ma$w, ma$mu, pch=20, col="grey60", lwd=1.5)
 
-ma <- get_moving_average(d_clean$signal, d_clean$PC1, 100)
-PC1_r <- get_ma_residuals(d_clean[c("chrom", "start", "end", "signal", "PC1")], ma)
-plot(d$signal, d$PC1, col=ifelse(d$PC1 > 0, "red", "blue"),
-     pch=20, xlab="DpnII-seq signal", ylab="PC1", cex=0.5, cex.lab=1.5)
-rho <- sprintf("%.2f",round(cor(d$signal, d$PC1, method="spearman", use="complete.obs"), 3))
-text(1700, -0.015, bquote(rho == .(rho) ), cex=2)
-lines(ma$w, ma$mu, pch=20, col="grey60", lwd=1.5)
+d_subset <- d[d$signal > 1000 & d$signal < 1100,]
+plot(d_subset$PC1, d_subset$LOS_d, col=ifelse(d_subset$PC1 > 0, "red", "blue"),
+     pch=20, xlab="PC1", ylab="LOS DpnII (%)", cex=1, cex.lab=1.5)
+rho <- sprintf("%.2f",round(cor(d_subset$PC1, d_subset$LOS_d, method="spearman", use="complete.obs"), 3))
+text(0.01, 0.81, bquote(rho == .(rho) ), cex=2)
+
+ma <- get_moving_average(d_clean$signal, d_clean$PC1, 200, 1, 0)
+PC1_r <- get_ma_residuals(d_clean[c("chrom", "start", "end", "signal", "PC1")], ma, 0)
+ma <- get_moving_average(d_clean$PC1, d_clean$signal, .004, .00001, 5)
+DpnII_r <- get_ma_residuals(d_clean[c("chrom", "start", "end", "PC1", "signal")], ma, 5)
+ma <- get_moving_average(d_clean$PC1, d_clean$LOS_d, .004, .00001, 5)
+los_r_pc1 <- get_ma_residuals(d_clean[c("chrom", "start", "end", "PC1", "LOS_d")], ma, 5)
 
 colnames(los_r) <- c("chrom", "start", "end", "LOS_residuals")
 colnames(PC1_r) <- c("chrom", "start", "end", "PC1_residuals")
@@ -129,90 +120,94 @@ plot(df_residuals$PC1_residuals, df_residuals$LOS_residuals, col=ifelse(df_resid
      cex.lab=1.5)
 rho <- sprintf("%.2f",round(cor(df_residuals$PC1_residuals, df_residuals$LOS_residuals, method="spearman", use="complete.obs"), 3))
 text(0, -0.075, bquote(rho == .(rho) ), cex=2)
-#abline(resid_LOS_PC1_m$coefficients[1], resid_LOS_PC1_m$coefficients[2], col="grey60", lwd=1.5)
 
-DpnIIseq_residuals <- get_residuals(d_clean$signal, d_clean$PC1)
-LOS_residuals <- get_residuals(d_clean$LOS_d, d_clean$PC1)
-resid_LOS_DpnIIseq_m <- lm(LOS_residuals ~ DpnIIseq_residuals)
-plot(DpnIIseq_residuals, LOS_residuals, col=ifelse(d_clean$PC1 > 0, "red", "blue"),
-     pch=20, xlab="DpnII-seq residuals", ylab="LOS DpnII (%) residuals", cex=0.5,
-     xlim=c(-1000,1000), cex.lab=1.5)
-rho <- sprintf("%.2f",round(cor(DpnIIseq_residuals, LOS_residuals, method="spearman", use="complete.obs"), 3))
-text(400, -0.075, bquote(rho == .(rho) ), cex=2)
-abline(resid_LOS_DpnIIseq_m$coefficients[1], resid_LOS_DpnIIseq_m$coefficients[2], col="grey60", lwd=1.5)
+colnames(los_r_pc1) <- c("chrom", "start", "end", "LOS_residuals")
+colnames(DpnII_r) <- c("chrom", "start", "end", "DpnII_residuals")
+df_residuals <- merge(d_clean, los_r_pc1, by=c("chrom", "start", "end"))
+df_residuals <- merge(df_residuals, DpnII_r, by=c("chrom", "start", "end"))
+
+plot(df_residuals$DpnII_residuals, df_residuals$LOS_residuals, col=ifelse(df_residuals$PC1 > 0, "red", "blue"),
+     pch=20, xlab="DpnII-seq residuals", ylab="LOS DpnII (%) residuals", cex=0.5, 
+     cex.lab=1.5)
+rho <- sprintf("%.2f",round(cor(df_residuals$DpnII_residuals, df_residuals$LOS_residuals, method="spearman", use="complete.obs"), 3))
+text(0, -0.075, bquote(rho == .(rho) ), cex=2)
 dev.off()
 
 
-png("scatterplot_get_moving_average.png", height=3500, width=1600, res=300)
-par(mfrow=c(3,2), mar=c(5, 4, 2, 2) + 0.1)
-d_clean <- na.omit(d)
 
-LOShPC1m <- lm(d_clean$LOS_h~d_clean$PC1)
+png("fig3_scatterplots_moving_average.png", height=3500, width=1600, res=300)
+par(mfrow=c(3,2), mar=c(5, 4, 2, 2) + 0.1)
+
 plot(d$PC1, d$LOS_h, col=ifelse(d$PC1 > 0, "red", "blue"),
      pch=20, xlab="", ylab="", cex=0.5, cex.lab=1.5, axes=FALSE)
-axis(1, labels=FALSE) 
-axis(2, labels=FALSE)
-box()
 # rho <- sprintf("%.2f",round(cor(d$PC1, d$LOS_h, method="spearman", use="complete.obs"), 3))
 # text(0.01, -0.10, bquote(rho == .(rho) ), cex=2)
-abline(LOShPC1m$coefficients[1], LOShPC1m$coefficients[2], col="grey60", lwd = 3)
+axis(1, labels=FALSE)
+axis(2, labels=FALSE)
+box()
 
-LOSdPC1m <- lm(d_clean$LOS_d~d_clean$PC1)
 plot(d$PC1, d$LOS_d, col=ifelse(d$PC1 > 0, "red", "blue"),
      pch=20, xlab="", ylab="", cex=0.5, cex.lab=1.5, axes=FALSE)
-axis(1, labels=FALSE) 
-axis(2, labels=FALSE)
-box()
 # rho <- sprintf("%.2f",round(cor(d$PC1, d$LOS_d, method="spearman", use="complete.obs"), 3))
 # text(0.01, 0.78, bquote(rho == .(rho) ), cex=2)
-abline(LOSdPC1m$coefficients[1], LOSdPC1m$coefficients[2], col="grey60", lwd= 3)
+axis(1, labels=FALSE)
+axis(2, labels=FALSE)
+box()
 
-LOSdDpnIIseqm <- lm(d_clean$LOS_d~d_clean$signal)
+ma <- get_moving_average(d_clean$signal, d_clean$LOS_d, 200, 1, 0)
+los_r <- get_ma_residuals(d_clean[c("chrom", "start", "end", "signal", "LOS_d")], ma, 0)
 plot(d$signal, d$LOS_d, col=ifelse(d$PC1 > 0, "red", "blue"),
      pch=20, xlab="", ylab="", cex=0.5, cex.lab=1.5, axes=FALSE)
-axis(1, labels=FALSE) 
-axis(2, labels=FALSE)
-box()
 # rho <- sprintf("%.2f",round(cor(d$signal, d$LOS_d, method="spearman", use="complete.obs"), 3))
 # text(1700, 0.78, bquote(rho == .(rho) ), cex=2)
-abline(LOSdDpnIIseqm$coefficients[1], LOSdDpnIIseqm$coefficients[2], col="grey60", lwd = 3)
+lines(ma$w, ma$mu, pch=20, col="grey60", lwd=1.5)
+axis(1, labels=FALSE)
+axis(2, labels=FALSE)
+box()
 
 d_subset <- d[d$signal > 1000 & d$signal < 1100,]
-d_subset_clean <- na.omit(d_subset)
-subset_m <- lm(d_subset_clean$LOS_d~d_subset_clean$PC1)
 plot(d_subset$PC1, d_subset$LOS_d, col=ifelse(d_subset$PC1 > 0, "red", "blue"),
      pch=20, xlab="", ylab="", cex=1, cex.lab=1.5, axes=FALSE)
-axis(1, labels=FALSE) 
-axis(2, labels=FALSE)
-box()
 # rho <- sprintf("%.2f",round(cor(d_subset$PC1, d_subset$LOS_d, method="spearman", use="complete.obs"), 3))
 # text(0.01, 0.81, bquote(rho == .(rho) ), cex=2)
-abline(subset_m$coefficients[1], subset_m$coefficients[2], col="grey60", lwd = 3)
-
-LOS_residuals <- get_residuals(d_clean$LOS_d, d_clean$signal)
-PC1_residuals <- get_residuals(d_clean$PC1, d_clean$signal)
-resid_LOS_PC1_m <-lm(LOS_residuals ~ PC1_residuals)
-plot(PC1_residuals, LOS_residuals, col=ifelse(d_clean$PC1 > 0, "red", "blue"),
-     pch=20, xlab="", ylab="", cex=0.5, cex.lab=1.5, axes=FALSE)
-axis(1, labels=FALSE) 
+axis(1, labels=FALSE)
 axis(2, labels=FALSE)
 box()
-# rho <- sprintf("%.2f",round(cor(PC1_residuals, LOS_residuals, method="spearman", use="complete.obs"), 3))
+
+ma <- get_moving_average(d_clean$signal, d_clean$PC1, 200, 1, 0)
+PC1_r <- get_ma_residuals(d_clean[c("chrom", "start", "end", "signal", "PC1")], ma, 0)
+ma <- get_moving_average(d_clean$PC1, d_clean$signal, .004, .00001, 5)
+DpnII_r <- get_ma_residuals(d_clean[c("chrom", "start", "end", "PC1", "signal")], ma, 5)
+ma <- get_moving_average(d_clean$PC1, d_clean$LOS_d, .004, .00001, 5)
+los_r_pc1 <- get_ma_residuals(d_clean[c("chrom", "start", "end", "PC1", "LOS_d")], ma, 5)
+
+colnames(los_r) <- c("chrom", "start", "end", "LOS_residuals")
+colnames(PC1_r) <- c("chrom", "start", "end", "PC1_residuals")
+df_residuals <- merge(d_clean, los_r, by=c("chrom", "start", "end"))
+df_residuals <- merge(df_residuals, PC1_r, by=c("chrom", "start", "end"))
+
+plot(df_residuals$PC1_residuals, df_residuals$LOS_residuals, col=ifelse(df_residuals$PC1 > 0, "red", "blue"),
+     pch=20, xlab="", ylab="", cex=0.5, 
+     cex.lab=1.5, axes=FALSE)
+# rho <- sprintf("%.2f",round(cor(df_residuals$PC1_residuals, df_residuals$LOS_residuals, method="spearman", use="complete.obs"), 3))
 # text(0, -0.075, bquote(rho == .(rho) ), cex=2)
-abline(resid_LOS_PC1_m$coefficients[1], resid_LOS_PC1_m$coefficients[2], col="grey60", lwd=3)
-
-DpnIIseq_residuals <- get_residuals(d_clean$signal, d_clean$PC1)
-LOS_residuals <- get_residuals(d_clean$LOS_d, d_clean$PC1)
-resid_LOS_DpnIIseq_m <- lm(LOS_residuals ~ DpnIIseq_residuals)
-plot(DpnIIseq_residuals, LOS_residuals, col=ifelse(d_clean$PC1 > 0, "red", "blue"),
-     pch=20, xlab="", ylab="", cex=0.5,
-     xlim=c(-1000,1000), cex.lab=1.5, axes=FALSE)
-axis(1, labels=FALSE) 
+axis(1, labels=FALSE)
 axis(2, labels=FALSE)
 box()
-# rho <- sprintf("%.2f",round(cor(DpnIIseq_residuals, LOS_residuals, method="spearman", use="complete.obs"), 3))
-# text(400, -0.075, bquote(rho == .(rho) ), cex=2)
-abline(resid_LOS_DpnIIseq_m$coefficients[1], resid_LOS_DpnIIseq_m$coefficients[2], col="grey60", lwd=3)
+
+colnames(los_r_pc1) <- c("chrom", "start", "end", "LOS_residuals")
+colnames(DpnII_r) <- c("chrom", "start", "end", "DpnII_residuals")
+df_residuals <- merge(d_clean, los_r_pc1, by=c("chrom", "start", "end"))
+df_residuals <- merge(df_residuals, DpnII_r, by=c("chrom", "start", "end"))
+
+plot(df_residuals$DpnII_residuals, df_residuals$LOS_residuals, col=ifelse(df_residuals$PC1 > 0, "red", "blue"),
+     pch=20, xlab="", ylab="", cex=0.5, 
+     cex.lab=1.5, axes=FALSE)
+# rho <- sprintf("%.2f",round(cor(df_residuals$DpnII_residuals, df_residuals$LOS_residuals, method="spearman", use="complete.obs"), 3))
+# text(0, -0.075, bquote(rho == .(rho) ), cex=2)
+axis(1, labels=FALSE)
+axis(2, labels=FALSE)
+box()
 dev.off()
 
 
