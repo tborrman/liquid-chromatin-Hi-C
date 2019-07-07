@@ -39,6 +39,13 @@ for (i in seq(1,23)) {
   copy_col[copy == 4] <- 'green'
   points(dpnII_gen/1000000, dpnII_chr$reads, pch=20, col=copy_col)
   dev.off()
+  pdf(paste(file_prefix, i, ".pdf",sep=""), width=12, height=3.5)
+  par(mar=c(5,6,4,2) + 0.1)
+  plot(dpnII_gen/1000000, dpnII_chr$reads, type='l',col="black", xlim=c(0,max(dpnII_gen)/1000000), 
+       xlab= "Genomic position (Mb)", ylab="Raw DpnII-seq signal", cex.lab = 1.5, ylim=c(0,4500),
+       main = paste("Chromosome ", i, sep=""), cex.main=1.5)
+  points(dpnII_gen/1000000, dpnII_chr$reads, pch=20, col=copy_col, cex=0.5)
+  dev.off()
 }
 
 # Copy number corrected
@@ -59,4 +66,13 @@ for (i in seq(1,23)) {
        main = paste("Chromosome ", i, sep=""), cex.main=1.5)
   points(dpnIIc_gen/1000000, dpnIIc_chr$reads, pch=20, col="blue")
   dev.off()
+  pdf(paste(file_prefix, i, ".pdf",sep=""), width=12, height=3.5)
+  par(mar=c(5,6,4,2) + 0.1)
+  plot(dpnIIc_gen/1000000, dpnIIc_chr$reads, type='l',col="black", xlim=c(0,max(dpnIIc_gen)/1000000), 
+       xlab= "Genomic position (Mb)", ylab="Corrected DpnII-seq signal", cex.lab = 1.5, ylim=c(0,4500),
+       main = paste("Chromosome ", i, sep=""), cex.main=1.5)
+  points(dpnIIc_gen/1000000, dpnIIc_chr$reads, pch=20, col="blue", cex=0.5)
+  dev.off()
+  
 }
+
