@@ -72,7 +72,7 @@ lines(ma$w, ma$mu, pch=20, col="grey60", lwd=3)
 dev.off()
 
 
-png("halflife_vs_DpnIIseq1h_moving_average_zoom_AB_density.png", width=2500, height=2500, res=300)
+png("halflife_vs_DpnIIseq1h_moving_average_zoom_AB_density_alpha0.1.png", width=2500, height=2500, res=300)
 A <- df_clean[df_clean$PC1 > 0,]
 B <- df_clean[df_clean$PC1 < 0,]
 #steps <- seq(1, length(B$chrom) +100, 100)
@@ -85,20 +85,20 @@ plot(0, ylab=bquote("t"[1/2]~" (minutes)"), xlab="DpnII-seq signal (1h)",
 for (i in 1:length(steps)) {
   if (! Adone) {
     if (i > length(A$chrom)) {
-      points(A$DpnIIseq[steps[i]:length(A$DpnIIseq)], A$hl[steps[i]:length(A$DpnIIseq)], pch=20, col=rgb(1,0,0, alpha=0.05))
+      points(A$DpnIIseq[steps[i]:length(A$DpnIIseq)], A$hl[steps[i]:length(A$DpnIIseq)], pch=20, col=rgb(1,0,0, alpha=0.1))
       Adone = TRUE
     }
     else {
-      points(A$DpnIIseq[steps[i]:(steps[i]+(stepsize-1))], A$hl[steps[i]:(steps[i]+(stepsize-1))], pch=20, col=rgb(1,0,0, alpha=0.05))
+      points(A$DpnIIseq[steps[i]:(steps[i]+(stepsize-1))], A$hl[steps[i]:(steps[i]+(stepsize-1))], pch=20, col=rgb(1,0,0, alpha=0.1))
     }
   }
   if (! Bdone) {
     if (i > length(B$chrom)) {
-      points(B$DpnIIseq[steps[i]:length(B$DpnIIseq)], B$hl[steps[i]:length(B$DpnIIseq)], pch=20, col=rgb(0,0,1, alpha=0.05))
+      points(B$DpnIIseq[steps[i]:length(B$DpnIIseq)], B$hl[steps[i]:length(B$DpnIIseq)], pch=20, col=rgb(0,0,1, alpha=0.1))
       Bdone = TRUE
     }
     else {
-      points(B$DpnIIseq[steps[i]:(steps[i]+(stepsize-1))], B$hl[steps[i]:(steps[i]+(stepsize-1))], pch=20, col=rgb(0,0,1, alpha=0.05))
+      points(B$DpnIIseq[steps[i]:(steps[i]+(stepsize-1))], B$hl[steps[i]:(steps[i]+(stepsize-1))], pch=20, col=rgb(0,0,1, alpha=0.1))
     }
   }
 }
@@ -107,3 +107,42 @@ dev.off()
 
 cor(df_clean$DpnIIseq, df_clean$hl, method="spearman", use="complete.obs")
 
+# hl residulas vs DpnIIseq
+hl_r <- read.table("C:/Users/tyler/Dropbox (UMass Medical School)/digest_092718/filter1000/timecourse1/half-life_residuals/half-life_filter1000_timecourse1_residuals_moving_average_from_1hDpnIIseq_40kb.bedGraph",
+                   sep="\t", header=FALSE, col.names=c("chrom", "start", "end", "hl_residuals")) 
+df <- cbind(hl_r, eigen["PC1"], dseq["DpnIIseq"])
+df_clean <- na.omit(df)
+
+png("halflife_residuals_vs_DpnIIseq1h_moving_average_zoom_AB_density_alpha0.1.png", width=2500, height=2500, res=300)
+A <- df_clean[df_clean$PC1 > 0,]
+B <- df_clean[df_clean$PC1 < 0,]
+#steps <- seq(1, length(B$chrom) +100, 100)
+Adone = FALSE
+Bdone = FALSE
+stepsize <- 10
+steps <- seq(1, length(B$chrom) + stepsize, stepsize)
+plot(0, ylab=bquote("t"[1/2]~" residuals (minutes)"), xlab="DpnII-seq signal (1h)", 
+     xlim=c(200,3000), ylim=c(-50,50))
+for (i in 1:length(steps)) {
+  if (! Adone) {
+    if (i > length(A$chrom)) {
+      points(A$DpnIIseq[steps[i]:length(A$DpnIIseq)], A$hl_residuals[steps[i]:length(A$DpnIIseq)], pch=20, col=rgb(1,0,0, alpha=0.1))
+      Adone = TRUE
+    }
+    else {
+      points(A$DpnIIseq[steps[i]:(steps[i]+(stepsize-1))], A$hl_residuals[steps[i]:(steps[i]+(stepsize-1))], pch=20, col=rgb(1,0,0, alpha=0.1))
+    }
+  }
+  if (! Bdone) {
+    if (i > length(B$chrom)) {
+      points(B$DpnIIseq[steps[i]:length(B$DpnIIseq)], B$hl_residuals[steps[i]:length(B$DpnIIseq)], pch=20, col=rgb(0,0,1, alpha=0.1))
+      Bdone = TRUE
+    }
+    else {
+      points(B$DpnIIseq[steps[i]:(steps[i]+(stepsize-1))], B$hl_residuals[steps[i]:(steps[i]+(stepsize-1))], pch=20, col=rgb(0,0,1, alpha=0.1))
+    }
+  }
+}
+dev.off()
+
+cor(df_clean$DpnIIseq, df_clean$hl_residuals, method="spearman", use="complete.obs")
