@@ -32,6 +32,7 @@ def log2ratio(x,y):
 	Returns:
 	z : bedGraph object of log2ratio(x/y)
 	'''
+
 	d = np.divide(x.values, y.values)
 	d[np.isinf(d)] = np.nan
 	lr = np.log2(d)
@@ -42,7 +43,7 @@ def log2ratio(x,y):
 
 def main():
 
-	np.seterr(divide='ignore')
+	np.seterr(divide='ignore', invalid='ignore')
 	a = bG.bedGraph(args.a)
 	b = bG.bedGraph(args.b)
 	if check_coordinates(a,b) :
