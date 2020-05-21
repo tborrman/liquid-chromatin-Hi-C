@@ -35,24 +35,24 @@ polygon(c(d$start/1000000, rev(d$start/1000000)),
 axis(1, lwd=2, cex.axis=1, labels=FALSE) 
 axis(2, lwd=2, cex.axis=1)
 box(bty="l", lwd=2)
-plot(d$start/1000000, d$HindIII, type="l", col="red", 
-     ylim=c(10,28), xlab = "", ylab = "", axes=FALSE, lwd=0.5)
+plot(d$start/1000000, d$HindIII, type="n", 
+     ylim=c(7,28), xlab = "", ylab = "", axes=FALSE)
 polygon(c(d$start/1000000, rev(d$start/1000000)), 
         c(d$HindIII, rep(0, length(d$HindIII))), col="red",
         border=NA)
 axis(1, lwd=2, cex.axis=1, labels=FALSE) 
 axis(2, lwd=2, cex.axis=1)
 box(bty="l", lwd=2)
-plot(d$start/1000000, d$DpnII, type="l", col="cyan",
-     ylim=c(80,175),xlab = "", ylab= "", axes=FALSE, lwd=0.5)
+plot(d$start/1000000, d$DpnII, type="n",
+     ylim=c(65,175),xlab = "", ylab= "", axes=FALSE)
 polygon(c(d$start/1000000, rev(d$start/1000000)), 
         c(d$DpnII, rep(0, length(d$DpnII))), col="cyan",
         border=NA)
 axis(1, lwd=2, cex.axis=1, labels=FALSE) 
 axis(2, lwd=2, cex.axis=1)
 box(bty="l", lwd=2)
-plot(d$start/1000000, d$FatI, type="l", col="orange",
-     ylim=c(180,300),xlab = "", ylab="", axes=FALSE, lwd=0.5)
+plot(d$start/1000000, d$FatI, type="n",
+     ylim=c(165,300),xlab = "", ylab="", axes=FALSE)
 polygon(c(d$start/1000000, rev(d$start/1000000)), 
         c(d$FatI, rep(0, length(d$FatI))), col="orange",
         border=NA)
