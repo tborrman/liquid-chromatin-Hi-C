@@ -9,7 +9,7 @@ A majority of code works on downstream analysis of Hi-C interaction matrices in 
 
 with ongoing devlopment for compatibility with cooler format:
 - https://github.com/mirnylab/cooler
-## Usage
+## Usage Examples
 ### Calculating Loss of Structure (LOS)
 ```bash
 # Scale control Hi-C matrix and predigested Hi-C matrix
