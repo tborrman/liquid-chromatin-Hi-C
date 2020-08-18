@@ -3,7 +3,7 @@
 
 All code developed for the analysis of Liquid-Chromatin Hi-C assays. 
 
-A majority of code works on downstream analysis of Hi-C interaction matrices in cworld compatible HDF5 format:
+A majority of code performs downstream analysis of Hi-C interaction matrices in cworld compatible HDF5 format:
 - https://github.com/dekkerlab/cMapping
 - https://github.com/dekkerlab/cworld-dekker
 
