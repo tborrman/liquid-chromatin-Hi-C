@@ -1,5 +1,5 @@
 # half-lifes are fun!!!!
-source("C:/cygwin64/home/Tyler/Research/digest/digest-Hi-C/my_functions.R")
+source("C:/cygwin64/home/Tyler/Research/digest/liquid-chromatin-Hi-C/src/scripts/my_functions.R")
 
 options(scipen=100)
 #Get data
