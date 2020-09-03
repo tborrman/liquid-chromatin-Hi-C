@@ -1,0 +1,171 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>liquid_chromatin_HiC &#8212; liquid-chromatin-Hi-C  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="liquid-chromatin-hic">
+<h1>liquid_chromatin_HiC<a class="headerlink" href="#liquid-chromatin-hic" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="liquid_chromatin_HiC.html">liquid_chromatin_HiC package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.HOT_scale">liquid_chromatin_HiC.HOT_scale module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.bedGraph">liquid_chromatin_HiC.bedGraph module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.bin2full">liquid_chromatin_HiC.bin2full module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.bin_ChIPseq">liquid_chromatin_HiC.bin_ChIPseq module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.bin_K562_LmnB1">liquid_chromatin_HiC.bin_K562_LmnB1 module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.bin_WGBS">liquid_chromatin_HiC.bin_WGBS module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.bin_histone">liquid_chromatin_HiC.bin_histone module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.boxplot_timecourse_2D">liquid_chromatin_HiC.boxplot_timecourse_2D module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.boxplot_timecourse_2D_AB">liquid_chromatin_HiC.boxplot_timecourse_2D_AB module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.compareMatrices_controller">liquid_chromatin_HiC.compareMatrices_controller module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.compartment_size">liquid_chromatin_HiC.compartment_size module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.cool2RangeCisPercent">liquid_chromatin_HiC.cool2RangeCisPercent module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.copy_correct_float">liquid_chromatin_HiC.copy_correct_float module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.dedup">liquid_chromatin_HiC.dedup module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.dedup2distancefilter">liquid_chromatin_HiC.dedup2distancefilter module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.diagonal2NA">liquid_chromatin_HiC.diagonal2NA module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.distancefilter2compartment">liquid_chromatin_HiC.distancefilter2compartment module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.exons_per_kb">liquid_chromatin_HiC.exons_per_kb module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.filter_validpairs">liquid_chromatin_HiC.filter_validpairs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.generate_feature_matrix">liquid_chromatin_HiC.generate_feature_matrix module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.generate_feature_matrix_40kb">liquid_chromatin_HiC.generate_feature_matrix_40kb module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.get_gene_positions">liquid_chromatin_HiC.get_gene_positions module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.get_gene_positions_controller">liquid_chromatin_HiC.get_gene_positions_controller module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.half_life_matrix">liquid_chromatin_HiC.half_life_matrix module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.half_life_matrix_6mb">liquid_chromatin_HiC.half_life_matrix_6mb module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.hdf2RangeCisPercent">liquid_chromatin_HiC.hdf2RangeCisPercent module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.hdf2StdDev">liquid_chromatin_HiC.hdf2StdDev module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.hdf2cisPercent">liquid_chromatin_HiC.hdf2cisPercent module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.hdf2compartment">liquid_chromatin_HiC.hdf2compartment module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.hdf2firstdiag">liquid_chromatin_HiC.hdf2firstdiag module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.hdf2rowSum">liquid_chromatin_HiC.hdf2rowSum module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.hdf2zScore">liquid_chromatin_HiC.hdf2zScore module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.heatmap_controller">liquid_chromatin_HiC.heatmap_controller module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.lieberman2matrix">liquid_chromatin_HiC.lieberman2matrix module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.log2ratio">liquid_chromatin_HiC.log2ratio module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.make_GEO_links">liquid_chromatin_HiC.make_GEO_links module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.map_500kb_state_to_40kb">liquid_chromatin_HiC.map_500kb_state_to_40kb module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.matrix2compartment_controller">liquid_chromatin_HiC.matrix2compartment_controller module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.matrix2pairwise_controller">liquid_chromatin_HiC.matrix2pairwise_controller module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.matrix2totalreads">liquid_chromatin_HiC.matrix2totalreads module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.matrix_functions">liquid_chromatin_HiC.matrix_functions module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.mean_cis">liquid_chromatin_HiC.mean_cis module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.median_trans">liquid_chromatin_HiC.median_trans module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.merge_pairwise_eigen1">liquid_chromatin_HiC.merge_pairwise_eigen1 module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.merge_pairwise_eigen1_controller">liquid_chromatin_HiC.merge_pairwise_eigen1_controller module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.merge_pairwise_subcompartment">liquid_chromatin_HiC.merge_pairwise_subcompartment module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.merge_pairwise_subcompartment_controller">liquid_chromatin_HiC.merge_pairwise_subcompartment_controller module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.read_normalize_bedGraph">liquid_chromatin_HiC.read_normalize_bedGraph module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.remove_half_life_outliers">liquid_chromatin_HiC.remove_half_life_outliers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.scale">liquid_chromatin_HiC.scale module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.scaleMatrix_controller">liquid_chromatin_HiC.scaleMatrix_controller module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.scaleMatrixbyFactor">liquid_chromatin_HiC.scaleMatrixbyFactor module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.slope_matrix">liquid_chromatin_HiC.slope_matrix module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.std2variance">liquid_chromatin_HiC.std2variance module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.subcompartment_clustering">liquid_chromatin_HiC.subcompartment_clustering module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.subcompartment_contact_enrichment">liquid_chromatin_HiC.subcompartment_contact_enrichment module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.subcompartment_size">liquid_chromatin_HiC.subcompartment_size module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC.transMatrix2EigenVectors">liquid_chromatin_HiC.transMatrix2EigenVectors module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="liquid_chromatin_HiC.html#module-liquid_chromatin_HiC">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">liquid-chromatin-Hi-C</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Tyler Borrman.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/modules.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
