@@ -297,21 +297,21 @@ def main():
         cp = cp / total_cov
 
 
-    # apply masks and register result for output:
+    # apply masks, *100 to turn into percentages and register result for output:
     cp[mask] = np.nan
-    clr_bins['cisRange'] = cp
+    clr_bins['cisRange'] = cp * 100.0
 
     # Write output
     # strip cool/mcool and uri part from input fname:
     cfname = path_uri.split("::")[0]
     cfname = '.'.join(cfname.split(".")[:-1])
     OUT_fname = cfname + '_range' + str(int(2*grange/1000000)) + 'Mb_cispercent.bedGraph'
-    # Only using 22 autosomes and X ...
+    # Only using 22 autosomes and X, only to match hdf2RangeCisPercent
     clr_bins.to_csv(OUT_fname,
                     sep='\t',
                     na_rep='NA',
                     columns=["chrom","start","end",'cisRange'],
-                    header=True,
+                    header=False,
                     index=False)
 
 
