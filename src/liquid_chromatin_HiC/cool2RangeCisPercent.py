@@ -43,7 +43,7 @@ def _timesouterproduct(chunk, bias, column_name='balanced'):
         # returning modified chunks with an additional column:
     return chunk
 
-def _get_chunk_coverage_cis(chunk, pixel_weight_key='count'):
+def _get_chunk_range_cis_coverage(chunk, pixel_weight_key='count'):
     '''
     Compute cisRange "coverage" for a given chunk of pixels.
 
@@ -72,6 +72,68 @@ def _get_chunk_coverage_cis(chunk, pixel_weight_key='count'):
     # skip dividing by 2
     # and beware the main diagonal double counting
     return cov
+
+def _get_chunk_coverage(chunk, pixel_weight_key='count'):
+    '''
+    Compute "coverage" for a given chunk of pixels.
+    Used for calculating total sum of a Hi-C heatmap's row - Tyler style
+
+    Parameters
+    ----------
+    chunk : dict of dict/pd.DataFrame
+        A cooler chunk of pixels produced by the cooler split-apply-combine pipeline.
+    pixel_weight_key: str
+        The key of a pixel chunk to retrieve pixel weights.
+
+    Returns
+    -------
+    cov : np.array n_bins
+        A numpy array with the coverage.
+    '''
+    bins = chunk['bins']
+    pixels = chunk['pixels']
+    n_bins = len(bins['chrom'])
+    cov = np.zeros(n_bins)
+    pixel_weights = pixels[pixel_weight_key]
+
+    cov += np.bincount(pixels['bin1_id'], weights=pixel_weights, minlength=n_bins)
+    cov += np.bincount(pixels['bin2_id'], weights=pixel_weights, minlength=n_bins)
+
+    # skip dividing by 2
+    # and beware the main diagonal double counting
+    return cov
+
+def _get_chunk_diag(chunk, pixel_weight_key='count'):
+    '''
+    Extract diagonal values from a chunk of pixels.
+    Used for adjusting cooler's coverage to Tyler's sums of rows.
+    The two differ by a diagonal.
+
+    Parameters
+    ----------
+    chunk : dict of dict/pd.DataFrame
+        A cooler chunk of pixels produced by the cooler split-apply-combine pipeline.
+    pixel_weight_key: str
+        The key of a pixel chunk to retrieve pixel weights.
+
+    Returns
+    -------
+    diag_vals : np.array n_bins
+        A numpy array with the diagonal values.
+    '''
+    bins = chunk['bins']
+    pixels = chunk['pixels']
+    n_bins = len(bins['chrom'])
+    diag_vals = np.zeros(n_bins)
+    pixel_weights = pixels[pixel_weight_key]
+
+    diag_mask = pixels['bin1_id'] == pixels['bin2_id']
+    # only one summation
+    diag_vals += np.bincount(pixels['bin1_id'], weights=pixel_weights*diag_mask, minlength=n_bins)
+
+    return diag_vals
+
+
 
 def _get_mask(n_bins,
             max_nan,
@@ -137,6 +199,8 @@ def main():
     parser.add_argument('-r', help='window range', type=int, default=6000000)
     parser.add_argument('-d', help='number of diagonals to ignore', type=int, default=0)
     parser.add_argument('-n', help='maximum percent of NAs allowed in window', type=float, default=10.0)
+    parser.add_argument('-w', help='specify name of the column with balancing weights', type=str, default="weight")
+    parser.add_argument('-t', help='divide cis-range by the total "coverage" (row-sum interpretation)', type=bool, default=False)
     args=parser.parse_args()
 
     # percent of NANs allowed
@@ -145,6 +209,12 @@ def main():
 
     # how many diagonals to ignore
     ignore_diags = args.d
+
+    # divide by total to better match Tyler's:
+    divide_by_total = args.t
+
+    # weight column name to use in cooler:
+    weight_column_name = args.w
 
     # genomic range - /2 to account for
     # upstream/downstream counting:
@@ -165,7 +235,7 @@ def main():
     # bins, number of bins, balancing weight, etc.
     n_bins = clr.info['nbins']
     clr_bins = clr.bins()[:]
-    bias = clr_bins['weight'].values
+    bias = clr_bins[weight_column_name].values
 
     # we will create a mask to fill cisRange
     # with NaNs where mask is True:
@@ -187,57 +257,62 @@ def main():
     # generate a stream of pixels (split into chunks) and apply various
     chunks = cooler.tools.split(clr, chunksize=int(1e7), map=map, use_lock=False)
     chunks = chunks.pipe(_zero_diags, n_diags=ignore_diags) if ignore_diags>0 else chunks
-    cov = (
+    cisrange_cov = (
         chunks
             .pipe(_zero_range, range_bins=range_bins)
             .pipe(_timesouterproduct, bias = _bias)
-            .pipe(_get_chunk_coverage_cis, pixel_weight_key="balanced")
+            .pipe(_get_chunk_range_cis_coverage, pixel_weight_key="balanced")
             .reduce( np.add, np.zeros(n_bins) )
     )
+    cp = cisrange_cov
 
-    # we can do the same stuff + ignore range bins =0
-    # and get the double counted main diagonal ...
-    # this is very inefficient, but whatever:
-    chunks = cooler.tools.split(clr, chunksize=int(1e7), map=map, use_lock=False)
-    diag = (
-        chunks
-            .pipe(_zero_range, range_bins=0)
-            .pipe(_timesouterproduct, bias = _bias)
-            .pipe(_get_chunk_coverage_cis, pixel_weight_key="balanced")
-            .reduce( np.add, np.zeros(n_bins) )
-    )
-    # afterwards covs-diag/2 should be the same as clr.maxtrix()[:].sum(axis=0) ...
+    # calculate the diagonal to adjust cooler's coverages to Tyler's sum of rows:
+    if ignore_diags == 0:
+        chunks = cooler.tools.split(clr, chunksize=int(1e7), map=map, use_lock=False)
+        diag = (
+            chunks
+                .pipe(_timesouterproduct, bias = _bias)
+                .pipe(_get_chunk_diag, pixel_weight_key="balanced")
+                .reduce( np.add, np.zeros(n_bins) )
+        )
+        # afterwards covs-diag should be the same as clr.maxtrix()[:].sum(axis=0) ...
+        cp = cp - diag
 
-    # some final  modifications we need to do
-    # to the cooler-pipeline generated result
-    # to make it indistinguishable from Tyler's:
-    cp = (cov-diag/2)
+    # divide by total to match Tyler's results even closer
+    # theoreticaly there is no need to divide to this in cooler,
+    # because balancing implies sum of rows (+diag is not ignored) = 1.0
+    # but due to the discrepancies between cooler/Tyler interpretation of coverage
+    # we need this ...
+    if divide_by_total:
+        chunks = cooler.tools.split(clr, chunksize=int(1e7), map=map, use_lock=False)
+        chunks = chunks.pipe(_zero_diags, n_diags=ignore_diags) if ignore_diags>0 else chunks
+        total_cov = (
+            chunks
+                .pipe(_timesouterproduct, bias = _bias)
+                .pipe(_get_chunk_coverage, pixel_weight_key="balanced")
+                .reduce( np.add, np.zeros(n_bins) )
+        )
+        # turn total coverage to sum of row's:
+        total_cov = total_cov if ignore_diags > 0 else total_cov - diag
+        cp = cp / total_cov
+
+
+    # apply masks, *100 to turn into percentages and register result for output:
     cp[mask] = np.nan
-    clr_bins['cisRange'] = cp
+    clr_bins['cisRange'] = cp * 100.0
 
     # Write output
     # strip cool/mcool and uri part from input fname:
     cfname = path_uri.split("::")[0]
     cfname = '.'.join(cfname.split(".")[:-1])
     OUT_fname = cfname + '_range' + str(int(2*grange/1000000)) + 'Mb_cispercent.bedGraph'
-    # Only using 22 autosomes and X ...
+    # Only using 22 autosomes and X, only to match hdf2RangeCisPercent
     clr_bins.to_csv(OUT_fname,
                     sep='\t',
                     na_rep='NA',
                     columns=["chrom","start","end",'cisRange'],
-                    header=True,
+                    header=False,
                     index=False)
-
-    # # something about excluding chrY chrM and other stuff
-    # y_chrom_bin_start =  f['chr_bin_range'][:][23][0]
-    # for i, b in enumerate(f['bin_positions'][:][:y_chrom_bin_start]):
-    #     if b[0] == 22:
-    #         chrom = 'chrX'
-    #     else:
-    #         chrom = 'chr' + str(b[0]+1)
-    #     OUT.write(chrom+'\t'+str(b[1])+'\t'+str(b[2])+
-    #     '\t'+ str(cp[i])+'\n')
-    # OUT.close()
 
 
 if __name__ == '__main__':
