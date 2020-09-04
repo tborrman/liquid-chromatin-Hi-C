@@ -277,9 +277,6 @@ def main():
         )
         # afterwards covs-diag should be the same as clr.maxtrix()[:].sum(axis=0) ...
         cp = cp - diag
-    # apply masks:
-    cp[mask] = np.nan
-    clr_bins['cisRange'] = cp
 
     # divide by total to match Tyler's results even closer
     # theoreticaly there is no need to divide to this in cooler,
@@ -295,7 +292,14 @@ def main():
                 .pipe(_get_chunk_coverage, pixel_weight_key="balanced")
                 .reduce( np.add, np.zeros(n_bins) )
         )
+        # turn total coverage to sum of row's:
+        total_cov = total_cov if ignore_diags > 0 else total_cov - diag
         cp = cp / total_cov
+
+
+    # apply masks and register result for output:
+    cp[mask] = np.nan
+    clr_bins['cisRange'] = cp
 
     # Write output
     # strip cool/mcool and uri part from input fname:
