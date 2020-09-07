@@ -22,14 +22,13 @@ get_ave_frag_size <- function(x) {
   
   # Constants#################################################################
   # sx = mean size in bp of fragments from slice x
-  s1 = 600
-  s2 = 1711
-  s3 = 5736
+  s1 = 643
+  s2 = 2332
+  s3 = 5495
   # qx = quantity of slice x fragments in ng/uL
-  # https://www.dropbox.com/scl/fi/yu8w7z4t55574dx4yy1yc/20190529_Summary_DpnII_digest_slices_worked20200410.xlsx?dl=0&rlkey=07une96q129rt2ljy7x8txcj6
-  q1 = 2.3196
-  q2 = 8.9299
-  q3 = 7.5452
+  q1 = 1.6562
+  q2 = 2.544
+  q3 = 2.4632
   ############################################################################
   
   if (any(is.na(x))) {
