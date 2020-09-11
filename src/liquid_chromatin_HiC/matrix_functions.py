@@ -100,7 +100,7 @@ def get_cis_matrix(f, chrom):
 	c = f['interactions'][bins[0]:bins[1] + 1, bins[0]: bins[1] + 1]
 	return c
 
-def get_all_trans(f):
+def get_all_trans(f, rm):
 	'''
 	Get all trans interactions from hdf5
 
@@ -108,6 +108,8 @@ def get_all_trans(f):
 
 	Args:
 		f: h5py Hi-C file object
+		rm: boolean if True remove Remove Y chrom 
+			and also mitochondrial chrom from trans
 	Returns:
 		trans : numpy array of all trans interactions
 	'''
@@ -117,8 +119,11 @@ def get_all_trans(f):
 	# x = np.array([[1,2,3,4,5,6],[5,6,7,8,9,1],[9,1,2,3,4,5],[4,5,6,7,8,9],[5,1,-2,-5,-1,-9], [-1,-3,4,-7,8,-9]])
 
 	bins = f['chr_bin_range'][:]
+
 	# Remove Y chrom since K562 and also mitochondrial chrom
-	bins = bins[:-2,:]
+	if rm:
+		bins = bins[:-2,:] 
+
 	x = f['interactions'][:]
 	
 
